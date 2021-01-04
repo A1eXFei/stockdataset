@@ -1,0 +1,5 @@
+numpy=1.16.2
+pandas=0.18.1
+SQLAlchemy=1.3.12
+mysql-connector-python=8.0.17
+PyYAML=3.12

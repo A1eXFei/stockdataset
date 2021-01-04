@@ -86,8 +86,3 @@ class StockSession:
         finally:
             sess.close()
             self.logger.info("更新完毕！")
-
-
-if __name__ == "__main__":
-    session = StockSession(["../config/logging_config.ini"])
-    session.add("../sse.xls", "../szse.xlsx")
