@@ -1,8 +1,6 @@
 # -*- coding: UTF-8 -*-
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, Date, Integer
-from sqlalchemy.orm import sessionmaker
-from utils import database as dbu
+from sqlalchemy import Column, String, Date, Integer, Float
 
 Base = declarative_base()
 
@@ -24,12 +22,23 @@ class Stock(Base):
                (self.code, self.name, self.last_update_date)
 
 
-if __name__ == "__main__":
-    # stock = Stock(code="223456", name="111111", last_update_date="2021-01-03")
-    Session = sessionmaker(bind=dbu.get_engine())
-    session = Session()
-    # session.add(stock)
-    stock = session.query(Stock).filter_by(code='123456').one()
-    session.delete(stock)
-    session.commit()
-    session.close()
+class DailyBasicData(Base):
+    __tablename__ = "tb_stock_basic_daily"
+
+    code = Column(String, name="CODE", primary_key=True)
+    date = Column(Date, name="DATE", primary_key=True)
+    t_close = Column(Float, name="TCLOSE")
+    high = Column(Float, name="HIGH")
+    low = Column(Float, name="LOW")
+    t_open = Column(Float, name="TOPEN")
+    l_close = Column(Float, name="LCLOSE")
+    chg = Column(Float, name="CHG")
+    p_chg = Column(Float, name="PCHG")
+    turnover = Column(Float, name="TURNOVER")
+    vo_turnover = Column(Float, name="VOTURNOVER")
+    va_turnover = Column(Float, name="VATURNOVER")
+    t_cap = Column(Float, name="TCAP")
+    m_cap = Column(Float, name="MCAP")
+
+    def __repr__(self):
+        return "<Stock(CODE='%s', DATE='%s')>" % (self.code, self.date)
