@@ -10,10 +10,10 @@ from utils import database as dbu
 DEFAULT_LAST_UPDATE_DATE = '1991-01-01'
 
 
-class StockSession:
+class StockBasicInfoDaoImpl:
     def __init__(self, config_files):
         fileConfig(config_files[0])
-        self.logger = logging.getLogger(StockSession.__name__)
+        self.logger = logging.getLogger(StockBasicInfoDaoImpl.__name__)
 
     def add(self, sse_file_path, szse_file_path):
         stock_list = []
@@ -61,6 +61,7 @@ class StockSession:
             self.logger.debug("处理股票代码：" + each.code)
             try:
                 _ = sess.query(Stock).filter_by(code=each.code).one()
+                self.logger.debug("股票代码" + each.code + "已存在")
                 pass
             except sqlalchemy.orm.exc.NoResultFound as _:
                 sess.add(each)
