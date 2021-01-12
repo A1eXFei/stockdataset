@@ -21,6 +21,8 @@ config = {"host": yaml_config[env]["hostname"],
           "charset": yaml_config[env]["charset"]
           }
 
+logger = logging.getLogger("appLogger")
+
 
 def get_engine():
     conn = "mysql://" + config["user"] + \
@@ -28,7 +30,7 @@ def get_engine():
            "@" + config["host"] + \
            "/" + config["database"] + \
            "?charset=" + config["charset"]
-    logging.debug(conn)
+    logger.debug(conn)
     return create_engine(conn)
 
 
@@ -48,7 +50,7 @@ def save_pd_data(table_name, table_data, if_exists='append', index=True):
            "@" + config["host"] + \
            "/" + config["database"] + \
            "?charset=" + config["charset"]
-    logging.debug(conn)
+    logger.debug(conn)
     engine = create_engine(conn)
     table_data.to_sql(table_name, engine, if_exists=if_exists, index=index)
 
@@ -60,7 +62,7 @@ def get_data(sql):
         cursor.execute(sql)
         return cursor.fetchall()
     except Exception as ex:
-        logging.error(ex)
+        logger.error(ex)
     finally:
         cursor.close()
         cnx.close()
@@ -73,7 +75,7 @@ def update(sql):
         cursor.execute(sql)
         cnx.commit()
     except Exception as ex:
-        logging.error(ex)
+        logger.error(ex)
         cnx.rollback()
     finally:
         cursor.close()
@@ -87,7 +89,7 @@ def call(procname, args=()):
         cursor.callproc(procname, args)
         cnx.commit()
     except Exception as ex:
-        logging.error(ex)
+        logger.error(ex)
         cnx.rollback()
     finally:
         cursor.close()

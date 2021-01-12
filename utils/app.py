@@ -4,14 +4,19 @@ from logging.handlers import TimedRotatingFileHandler
 
 
 def config_logger():
-    logging.basicConfig(level=logging.INFO,
-                        format="%(asctime)s - [%(filename)s:%(lineno)s] - %(levelname)s - %(message)s",
-                        datefmt="%Y-%m-%d %H:%M",
-                        filename="app.log",
-                        filemode="a")
+    logger = logging.getLogger("appLogger")
     formatter = logging.Formatter("%(asctime)s - [%(filename)s:%(lineno)s] - %(levelname)s - %(message)s")
+    logger.setLevel(logging.DEBUG)
     console = logging.StreamHandler(sys.stdout)
     console.setLevel(logging.DEBUG)
     console.setFormatter(formatter)
-    logging.getLogger("").addHandler(console)
+
+    trh = TimedRotatingFileHandler(filename="app.log", when="m", interval=1, encoding="utf-8")
+    trh.setLevel(logging.DEBUG)
+    trh.setFormatter(formatter)
+
+    logger.addHandler(trh)
+    logger.addHandler(console)
+
+
 

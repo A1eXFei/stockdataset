@@ -10,14 +10,14 @@ from utils import database as dbu
 
 class StockBasicDailyDataDaoImpl:
     def __init__(self):
-        pass
+        self.logger = logging.getLogger("appLogger")
 
     def save_data_to_database(self, data):
         try:
             dbu.save_pd_data("tb_stock_basic_daily", data)
-            logging.info("数据已存入库")
+            self.logger.info("数据已存入库")
         except Exception as ex:
-            logging.error(ex)
+            self.logger.error(ex)
 
     def get_data_from_163(self, stock_code, start_date, end_date, retry_count=10, pause=0.001):
         def _code_to_symbol(code):
@@ -34,7 +34,7 @@ class StockBasicDailyDataDaoImpl:
         url_par_field = "fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP"
 
         url = url_base + url_par_code + url_par_start + url_par_end + url_par_field
-        logging.debug(url)
+        self.logger.debug(url)
 
         cols = ['date',
                 'code',
@@ -61,10 +61,10 @@ class StockBasicDailyDataDaoImpl:
                 if len(lines) < 2:
                     raise NoDataReceiveException("No data received")
             except NoDataReceiveException as _:
-                logging.error("没有收到数据")
+                self.logger.error("没有收到数据")
                 pass
             except Exception as ex:
-                logging.error(ex)
+                self.logger.error(ex)
                 pass
             else:
                 data = []

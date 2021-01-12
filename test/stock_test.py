@@ -1,10 +1,8 @@
 # -*- coding: UTF-8 -*-
-import biz.daily as daily
 import utils.app as app
 from biz.dao.stock_basic_info import StockBasicInfoDaoImpl
 from biz.dao.stock_basic_daily_data import StockBasicDailyDataDaoImpl
-
-app.config_logger()
+from biz import daily
 
 
 def test_stock_basic_info():
@@ -23,4 +21,5 @@ def test_daily_loader():
 
 
 if __name__ == "__main__":
+    app.config_logger()
     test_daily_loader()

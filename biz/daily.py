@@ -6,9 +6,11 @@ from biz.dao.stock_basic_info import StockBasicInfoDaoImpl
 from biz.dao.stock_basic_daily_data import StockBasicDailyDataDaoImpl
 from utils import date as du
 
+logger = logging.getLogger("appLogger")
+
 
 def create_process(stock_code, start_date, end_date):
-    logging.info("正在处理股票代码" + stock_code + " 开始日期" + start_date + "，结束日期" + end_date)
+    logger.info("正在处理股票代码" + stock_code + " 开始日期" + start_date + "，结束日期" + end_date)
     sbdd = StockBasicDailyDataDaoImpl()
     sbdd.save_data_to_database(sbdd.get_data_from_163(stock_code, start_date, end_date))
 
@@ -16,7 +18,7 @@ def create_process(stock_code, start_date, end_date):
 def load_daily_data():
     now = datetime.now()
     today = du.date_to_string(now, '%Y-%m-%d')
-    logging.info("今天是" + today)
+    logger.info("今天是" + today)
     sbi = StockBasicInfoDaoImpl()
     stocks = sbi.get_stock_codes()
 
