@@ -4,17 +4,11 @@ import logging
 import yaml
 import mysql.connector
 import pandas as pd
-from logging.config import fileConfig
 from sqlalchemy import create_engine
 
 current_path = os.path.abspath(__file__)
 db_config_file_path = os.path.join(os.path.abspath(os.path.dirname(current_path) + os.path.sep + "../config"),
                                    "database_config.yaml")
-logging_config_file_path = os.path.join(os.path.abspath(os.path.dirname(current_path) + os.path.sep + "../config"),
-                                        "logging_config.ini")
-
-fileConfig(logging_config_file_path)
-logger = logging.getLogger(__name__)
 
 yaml_file = open(db_config_file_path, 'r', encoding='utf-8')
 yaml_config = yaml.load(yaml_file.read())
@@ -27,6 +21,8 @@ config = {"host": yaml_config[env]["hostname"],
           "charset": yaml_config[env]["charset"]
           }
 
+logger = logging.getLogger("appLogger")
+
 
 def get_engine():
     conn = "mysql://" + config["user"] + \
@@ -34,7 +30,7 @@ def get_engine():
            "@" + config["host"] + \
            "/" + config["database"] + \
            "?charset=" + config["charset"]
-    logging.debug(conn)
+    logger.debug(conn)
     return create_engine(conn)
 
 
@@ -48,18 +44,15 @@ def get_pd_data(sql):
 def save_pd_data(table_name, table_data, if_exists='append', index=True):
     if table_data is None:
         return
-    try:
-        conn = "mysql://" + config["user"] + \
-               ":" + config["password"] + \
-               "@" + config["host"] + \
-               "/" + config["database"] + \
-               "?charset=" + config["charset"]
-        logging.debug(conn)
-        engine = create_engine(conn)
-        table_data.to_sql(table_name, engine, if_exists=if_exists, index=index)
-    except Exception as ex:
-        print(ex)
-        logging.error(ex)
+
+    conn = "mysql://" + config["user"] + \
+           ":" + config["password"] + \
+           "@" + config["host"] + \
+           "/" + config["database"] + \
+           "?charset=" + config["charset"]
+    logger.debug(conn)
+    engine = create_engine(conn)
+    table_data.to_sql(table_name, engine, if_exists=if_exists, index=index)
 
 
 def get_data(sql):
@@ -69,7 +62,7 @@ def get_data(sql):
         cursor.execute(sql)
         return cursor.fetchall()
     except Exception as ex:
-        print(ex)
+        logger.error(ex)
     finally:
         cursor.close()
         cnx.close()
@@ -82,7 +75,7 @@ def update(sql):
         cursor.execute(sql)
         cnx.commit()
     except Exception as ex:
-        print(ex)
+        logger.error(ex)
         cnx.rollback()
     finally:
         cursor.close()
@@ -96,7 +89,7 @@ def call(procname, args=()):
         cursor.callproc(procname, args)
         cnx.commit()
     except Exception as ex:
-        print(ex)
+        logger.error(ex)
         cnx.rollback()
     finally:
         cursor.close()
