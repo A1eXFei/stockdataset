@@ -1,8 +1,12 @@
 由于新版本的tushare开始需要注册等乱七八糟的东西，使用stockmarket3代码会有很多限制。
 因此开发stockdataset来摆脱对tushare的依赖
 
+版本 v0.2.3
+1. 在从163上获取数据后更新tb_stock_list的last_update_date字段
+2. 在保存163数据前增加判断
+
 版本 v0.2.2
-添加了数据库创建语句
+database/mysql添加了数据库创建语句
 
 版本 v0.2.1
 修正了日志不打印到文件的错误，删除了config下日志配置文件，改用util/app下config_logger()配置
