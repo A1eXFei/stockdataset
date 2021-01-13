@@ -1,6 +1,12 @@
 由于新版本的tushare开始需要注册等乱七八糟的东西，使用stockmarket3代码会有很多限制。
 因此开发stockdataset来摆脱对tushare的依赖
 
+版本 v0.2.2
+添加了数据库创建语句
+
+版本 v0.2.1
+修正了日志不打印到文件的错误，删除了config下日志配置文件，改用util/app下config_logger()配置
+
 版本 v0.2
 从163获取股票的基础数据
 1. biz/daily从数据库中获取股票列表和最近更新日期

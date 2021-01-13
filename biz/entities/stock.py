@@ -42,3 +42,13 @@ class DailyBasicData(Base):
 
     def __repr__(self):
         return "<Stock(CODE='%s', DATE='%s')>" % (self.code, self.date)
+
+
+class DailyTechData(Base):
+    __tablename__ = "tb_stock_tech_daily"
+
+    code = Column(String, name="CODE", primary_key=True)
+    date = Column(Date, name="DATE", primary_key=True)
+    ma5 = Column(Float, name="MA5")
+    ma10 = Column(Float, name="MA10")
+    ma20 = Column(Float, name="MA20")
