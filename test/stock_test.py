@@ -12,7 +12,13 @@ def test_stock_basic_info():
 
 def test_stock_daily_basic():
     session = StockBasicDailyDataDaoImpl()
-    df = session.get_data_from_163("002384", start_date="2021-01-04", end_date="2021-01-08")
+    df = session.get_data_from_163("002384", start_date="2021-01-01", end_date="2021-01-13")
+    print(df)
+    df_max_idx = df.index.values.max()
+    print(df_max_idx)
+    print("=======================================")
+    df.drop(labels=df_max_idx, axis=0, inplace=True)
+    print(df)
     # session.save_data_to_database(df)
 
 

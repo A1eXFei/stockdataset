@@ -30,7 +30,7 @@ def get_engine():
            "@" + config["host"] + \
            "/" + config["database"] + \
            "?charset=" + config["charset"]
-    logger.debug(conn)
+    # logger.debug(conn)
     return create_engine(conn)
 
 

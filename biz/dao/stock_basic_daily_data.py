@@ -13,11 +13,8 @@ class StockBasicDailyDataDaoImpl:
         self.logger = logging.getLogger("appLogger")
 
     def save_data_to_database(self, data):
-        try:
-            dbu.save_pd_data("tb_stock_basic_daily", data)
-            self.logger.info("数据已存入库")
-        except Exception as ex:
-            self.logger.error(ex)
+        dbu.save_pd_data("tb_stock_basic_daily", data)
+        self.logger.info("数据已存入库")
 
     def get_data_from_163(self, stock_code, start_date, end_date, retry_count=10, pause=0.001):
         def _code_to_symbol(code):
@@ -58,7 +55,7 @@ class StockBasicDailyDataDaoImpl:
                 http = urllib3.PoolManager()
                 response = str(http.request(method="GET", url=url).data, encoding="gbk")
                 lines = response.split("\n")[1:-1]
-                if len(lines) < 2:
+                if len(lines) < 1:
                     raise NoDataReceiveException("No data received")
             except NoDataReceiveException as _:
                 self.logger.error("没有收到数据")
@@ -77,7 +74,7 @@ class StockBasicDailyDataDaoImpl:
                 for col in df.columns.values.tolist()[3:]:
                     df[col] = df[col].astype(float)
                 df["code"] = df["code"].str.lstrip("'")
-                df = df.set_index(['date', 'code'])
+                df = df.set_index(['date'])
                 df = df.sort_index(ascending=False)
                 return df
         return None
