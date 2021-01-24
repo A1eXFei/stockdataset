@@ -16,14 +16,14 @@ class StockBasicDailyDataDaoImpl:
         dbu.save_pd_data("tb_stock_basic_daily", data)
         self.logger.info("数据已存入库")
 
-    def get_data_from_163(self, stock_code, start_date, end_date, retry_count=10, pause=0.001):
-        def _code_to_symbol(code):
-            if len(code) != 6:
+    def get_data_from_163(self, code, start_date, end_date, retry_count=10, pause=0.001):
+        def _code_to_symbol(_code):
+            if len(_code) != 6:
                 return ''
             else:
-                return '0%s' % code if code[:1] in ['5', '6', '9'] else '1%s' % code
+                return '0%s' % _code if _code[:1] in ['5', '6', '9'] else '1%s' % _code
 
-        symbol = _code_to_symbol(stock_code)
+        symbol = _code_to_symbol(code)
         url_base = QUOTES_MONEY_163_URL
         url_par_code = "code=" + symbol + "&"
         url_par_start = "start=" + start_date.replace("-", "") + "&"
