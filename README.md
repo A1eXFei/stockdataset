@@ -1,6 +1,10 @@
 由于新版本的tushare开始需要注册等乱七八糟的东西，使用stockmarket3代码会有很多限制。
 因此开发stockdataset来摆脱对tushare的依赖
 
+版本 v0.3
+1. 完成部分技术指标计算迁移， 包括MA, BBI, BIAS, BRAR, DMA, MTM, PSY, VR, KDJ, MACD
+2. 未迁移的指标BOLL, CCI, ROC, RSI, WR，原因涉及TALIB库
+
 版本 v0.2.3
 1. 在从163上获取数据后更新tb_stock_list的last_update_date字段
 2. 在保存163数据前增加判断
