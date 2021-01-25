@@ -81,3 +81,6 @@ def load_daily_data():
     pool.close()
     pool.join()
 
+
+if __name__ == "__main__":
+    load_daily_data()

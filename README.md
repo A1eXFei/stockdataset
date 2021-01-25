@@ -1,6 +1,9 @@
 由于新版本的tushare开始需要注册等乱七八糟的东西，使用stockmarket3代码会有很多限制。
 因此开发stockdataset来摆脱对tushare的依赖
 
+版本 v0.3.1
+完成未迁移的技术指标
+
 版本 v0.3
 1. 完成部分技术指标计算迁移， 包括MA, BBI, BIAS, BRAR, DMA, MTM, PSY, VR, KDJ, MACD
 2. 未迁移的指标BOLL, CCI, ROC, RSI, WR，原因涉及TALIB库
@@ -29,3 +32,10 @@ database/mysql添加了数据库创建语句
 2. biz/dao/StockBasicInfoDaoImpl将读取文件内容插入数据库，新的插入，已有股票代码不做修改。
 3. 此版本仅插入和更新股票代码、股票名称、上市日期和上一次更新日期（默认1991-01-01， 为日后获取日交易数据使用），有序版本可能使用爬虫获取更多信息。
 
+
+运行方式：
+1. 运行database/mysql下数据库脚本
+2. 修改config/database_config.yaml数据库连接信息
+3. 修改config/app.yaml里文件路径信息
+4. 运行biz/weekly.py更新股票信息
+5. 运行biz/daily.py更新个股行情信息

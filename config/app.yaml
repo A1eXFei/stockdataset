@@ -1,3 +1,6 @@
 app:
   daily:
     num_process: 5
+  weekly:
+    sse_file_path: ../files/sse.xls
+    szse_file_path: ../szse.xlsx

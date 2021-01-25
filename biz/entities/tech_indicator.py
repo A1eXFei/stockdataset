@@ -1,17 +1,10 @@
 # -*- coding: UTF-8 -*-
 import logging
+import talib as ta
 import numpy as np
 import pandas as pd
 import utils.database as dbu
 from abc import ABCMeta, abstractmethod
-
-
-'''
-已迁移的技术指标:
-MA, BBI, BIAS, BRAR, DMA, MTM, PSY, VR, KDJ, MACD
-未迁移的技术指标:
-TODO:// BOLL, CCI, ROC, RSI, WR
-'''
 
 
 class BaseTechIndicator:
@@ -404,3 +397,160 @@ class MACD(BaseTechIndicator):
 
         self.logger.debug("DIF: {0}, DEA: {1}, MACD: {2}".format(dif, dea, macd))
         return dif, dea, macd
+
+
+class BOLL(BaseTechIndicator):
+    def __init__(self, code, date):
+        super(BOLL, self).__init__(code, date)
+        self._name = "BOLL"
+
+    def calc(self, **kwargs):
+        time_period = kwargs["time_period"]
+        nbdev_up = kwargs["nbdev_up"]
+        nbdev_down = kwargs["nbdev_down"]
+
+        upper_brand = 0.0
+        middle_brand = 0.0
+        lower_brand = 0.0
+
+        self._get_basic_data(time_period + 1)
+
+        if self.basic_data.shape[0] >= time_period:
+            upper_brands, middle_brands, lower_brands = ta.BBANDS(self.basic_data.shape['TCLOSE'].as_matrix(),
+                                                                  time_period, nbdev_up, nbdev_down)
+            upper_brand = round(upper_brands[-1], 3)
+            middle_brand = round(middle_brands[-1], 3)
+            lower_brand = round(lower_brands[-1], 3)
+        if np.isinf(upper_brand) or np.isnan(upper_brand) or np.isneginf(upper_brand):
+            upper_brand = 0.0
+        if np.isinf(middle_brand) or np.isnan(middle_brand) or np.isneginf(middle_brand):
+            middle_brand = 0.0
+        if np.isinf(lower_brand) or np.isnan(lower_brand) or np.isneginf(lower_brand):
+            lower_brand = 0.0
+
+        self.logger.debug("BOLL_UP: {0}, BOLL_MID: {1}, BOLL_LOW: {2}".format(upper_brand, middle_brand, lower_brand))
+
+        return upper_brand, middle_brand, lower_brand
+
+
+class CCI(BaseTechIndicator):
+    def __init__(self, code, date):
+        super(CCI, self).__init__(code, date)
+        self._name = "CCI"
+
+    def calc(self, **kwargs):
+        time_period = kwargs["time_period"]
+
+        cci = 0.0
+
+        self._get_basic_data(time_period + 1)
+
+        if self.basic_data.shape[0] >= time_period + 1:
+            cci = round(ta.CCI(self.basic_data['HIGH'].as_matrix(),
+                               self.basic_data['LOW'].as_matrix(),
+                               self.basic_data['TCLOSE'].as_matrix(), time_period)[-1], 3)
+        if np.isnan(cci) or np.isinf(cci) or np.isneginf(cci):
+            cci = 0.0
+
+        self.logger.debug("CCI: {0}".format(cci))
+
+        return cci
+
+
+class ROC(BaseTechIndicator):
+    def __init__(self, code, date):
+        super(ROC, self).__init__(code, date)
+        self._name = "ROC"
+
+    def calc(self, **kwargs):
+        time_period1 = kwargs["time_period1"]
+        time_period2 = kwargs["time_period2"]
+        max_time_period = max(time_period1, time_period2)
+
+        roc = 0.0
+        maroc = 0.0
+
+        self._get_basic_data(max_time_period + 1)
+
+        if self.basic_data.shape[0] >= time_period1:
+            rocs = ta.ROC(self.basic_data['TCLOSE'].as_matrix(), time_period1)
+            roc = round(rocs[-1], 3)
+            maroc = round(rocs[-6:].sum()/float(time_period2), 3)
+
+        if np.isnan(roc) or np.isinf(roc) or np.isneginf(roc):
+            roc = 0.0
+        if np.isnan(maroc) or np.isinf(maroc) or np.isneginf(maroc):
+            maroc = 0.0
+
+        self.logger.debug("ROC: {0}, MAROC: {1}".format(roc, maroc))
+
+        return roc, maroc
+
+
+class RSI(BaseTechIndicator):
+    def __init__(self, code, date):
+        super(RSI, self).__init__(code, date)
+        self._name = "RSI"
+
+    def calc(self, **kwargs):
+        time_period1 = kwargs["time_period1"]
+        time_period2 = kwargs["time_period2"]
+        time_period3 = kwargs["time_period3"]
+        max_time_period = max(time_period1, time_period2, time_period3)
+
+        rsi1 = 0.0
+        rsi2 = 0.0
+        rsi3 = 0.0
+
+        self._get_basic_data(max_time_period + 1)
+
+        if self.basic_data.shape[0] >= max_time_period + 1:
+            rsi1 = round(ta.RSI(self.basic_data['TCLOSE'].as_matrix(), time_period1)[-1], 3)
+            rsi2 = round(ta.RSI(self.basic_data['TCLOSE'].as_matrix(), time_period2)[-1], 3)
+            rsi3 = round(ta.RSI(self.basic_data['TCLOSE'].as_matrix(), time_period3)[-1], 3)
+        if np.isnan(rsi1) or np.isinf(rsi1) or np.isneginf(rsi1):
+            rsi1 = 0.0
+        if np.isnan(rsi2) or np.isinf(rsi2) or np.isneginf(rsi2):
+            rsi2 = 0.0
+        if np.isnan(rsi3) or np.isinf(rsi3) or np.isneginf(rsi3):
+            rsi3 = 0.0
+
+        self.logger.debug("RSI{0}: {1}, RSI{2}: {3}, RSI{4}: {5}".
+                          format(time_period1, rsi1, time_period2, rsi2, time_period3, rsi3))
+
+        return rsi1, rsi2, rsi3
+
+
+class WR(BaseTechIndicator):
+    def __init__(self, code, date):
+        super(WR, self).__init__(code, date)
+        self._name = "WR"
+
+    def calc(self, **kwargs):
+        time_period1 = kwargs["time_period1"]
+        time_period2 = kwargs["time_period2"]
+        max_time_period = max(time_period1, time_period2)
+
+        wr1 = 0.0
+        wr2 = 0.0
+
+        self._get_basic_data(max_time_period + 1)
+
+        if self.basic_data.shape[0] >= time_period1 + 1:
+            wr1 = round(ta.WILLR(self.basic_data['HIGH'].as_matrix(),
+                                 self.basic_data['LOW'].as_matrix(),
+                                 self.basic_data['TCLOSE'].as_matrix(),
+                                 time_period1)[-1] * -1, 3)
+            wr2 = round(ta.WILLR(self.basic_data['HIGH'].as_matrix(),
+                                 self.basic_data['LOW'].as_matrix(),
+                                 self.basic_data['TCLOSE'].as_matrix(),
+                                 time_period2)[-1] * -1, 3)
+
+        if np.isnan(wr1) or np.isinf(wr1) or np.isneginf(wr1):
+            wr1 = 0.0
+        if np.isnan(wr2) or np.isinf(wr2) or np.isneginf(wr2):
+            wr2 = 0.0
+
+        self.logger.debug("WR{0}: {1}, WR{2}: {3}".format(time_period1, wr1, time_period2, wr2))
+
+        return wr1, wr2
