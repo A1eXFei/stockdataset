@@ -1,15 +1,22 @@
 # -*- coding: UTF-8 -*-
+import yaml
 import logging
 import sqlalchemy
 import multiprocessing as mp
 from datetime import *
 from biz.entities.stock import *
 from biz.dao.stock_basic_info import StockBasicInfoDaoImpl
-from biz.dao.stock_basic_daily_data import StockBasicDailyDataDaoImpl
+from biz.dao.stock_basic_daily import StockBasicDailyDataDaoImpl
+from biz.dao.stock_tech_daily import StockTechDailyDataDaoImpl
 from utils import date as du
 from utils import database as dbu
 from utils import app
 from sqlalchemy.orm import sessionmaker
+
+app_param_file = open("../config/app.yaml", "r", encoding="utf-8")
+app_config = yaml.load(app_param_file.read())
+tech_param_file = open("../config/tech_indicator_params.yaml", "r", encoding="utf-8")
+tech_config = yaml.load(tech_param_file.read())
 
 
 def create_process(code, start_date, end_date):
@@ -55,6 +62,12 @@ def create_process(code, start_date, end_date):
             sess.add(stock)
             sess.commit()
             logger.info("刷新股票代码: " + code + "的最后更新日期为" + df_max_date)
+
+            logger.info("开始计算股票代码" + code + "的技术指标...")
+            stdd = StockTechDailyDataDaoImpl()
+            for each_date in df.index.values:
+                stdd.save_data_to_database(stdd.calc_tech_data(code, each_date, tech_config))
+            logger.info("股票代码" + code + "的技术指标信息已保存...")
     except Exception as ex:
         sess.rollback()
         logger.error(ex)
@@ -63,7 +76,7 @@ def create_process(code, start_date, end_date):
         logger.info("股票代码" + code + "的行情信息更新完毕！")
 
 
-def load_daily_data():
+def load_daily_data(num_process=5):
     logger = logging.getLogger("appLogger")
     now = datetime.now()
     today = du.date_to_string(now, '%Y-%m-%d')
@@ -71,10 +84,9 @@ def load_daily_data():
     sbi = StockBasicInfoDaoImpl()
     stocks = sbi.get_stock_codes()
 
-    pool = mp.Pool(processes=5)
-    # TODO://从app.yaml里读取线程数
-    for code, last_update_date in stocks[:20]:
-        # TODO:// 放开20的测试限制
+    pool = mp.Pool(processes=num_process)
+    for code, last_update_date in stocks[:2]:
+        # TODO:// 放开测试限制
         start_date = du.date_to_string(last_update_date, '%Y-%m-%d')
         pool.apply_async(create_process, (code, start_date, today))
 
@@ -83,4 +95,5 @@ def load_daily_data():
 
 
 if __name__ == "__main__":
-    load_daily_data()
+    num_process = app_config["app"]["daily"]["num_process"]
+    load_daily_data(num_process)

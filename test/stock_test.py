@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import utils.app as app
 from biz.dao.stock_basic_info import StockBasicInfoDaoImpl
-from biz.dao.stock_basic_daily_data import StockBasicDailyDataDaoImpl
+from biz.dao.stock_basic_daily import StockBasicDailyDataDaoImpl
 from biz import daily
 
 

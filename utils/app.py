@@ -12,7 +12,7 @@ def config_logger():
     console.setLevel(logging.DEBUG)
     console.setFormatter(formatter)
 
-    trh = TimedRotatingFileHandler(filename="app.log", when="m", interval=1, encoding="utf-8", backupCount=10)
+    trh = TimedRotatingFileHandler(filename="app.log", when="d", interval=1, encoding="utf-8", backupCount=10)
     trh.setLevel(logging.DEBUG)
     trh.setFormatter(formatter)
 

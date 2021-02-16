@@ -57,7 +57,7 @@ ROC:
 
 RSI:
   time_period1: 6
-  time_period2: 14
+  time_period2: 12
   time_period3: 24
 
 WR:
