@@ -18,13 +18,13 @@ BRAR:
   time_period: 26
 
 DMA:
-  time_period1: 6
-  time_period2: 10
-  time_period3: 30
+  time_period1: 10
+  time_period2: 50
+  time_period3: 10
 
 MTM:
-  time_period1: 6
-  time_period2: 12
+  time_period1: 12
+  time_period2: 6
 
 PSY:
   time_period1: 6
@@ -34,9 +34,9 @@ VR:
   time_period: 24
 
 KDJ:
-  time_period1: 3
+  time_period1: 9
   time_period2: 3
-  time_period3: 9
+  time_period3: 3
 
 MACD:
   time_period1: 9
@@ -52,8 +52,8 @@ CCI:
   time_period: 14
 
 ROC:
-  time_period1: 6
-  time_period2: 14
+  time_period1: 12
+  time_period2: 6
 
 RSI:
   time_period1: 6
