@@ -1,26 +1,38 @@
 # -*- coding: UTF-8 -*-
 from warnings import simplefilter
-import yaml
-import utils.app as app
-
 simplefilter(action='ignore', category=FutureWarning)
-app.config_logger()
-yaml_file = open("../config/tech_indicator_params.yaml", 'r', encoding='utf-8')
-yaml_config = yaml.load(yaml_file.read())
 
-# d_param = {"code": "000001", "date": "2020-01-05"}
-# ma_param = yaml_config["MA"]
-# d_param.update(ma_param)
-# print(d_param)
-#
-# # ma = MA('000001', '2020-01-05')
-# param = {"code": "000001", "date": "2020-01-05", "time_period1": 5, "time_period2": 10, "time_period3": 20}
-# # MA.calc(time_period1=5, time_period2=10, time_period3=20)
-# MA.calc(**d_param)
-#
+from biz.entities.tech_indicator import TechIndicatorCalculator
+from utils.database import get_engine
 
-from biz.dao.stock_tech_indicator_dao import StockTechDailyDataDaoImpl
-# print(yaml_config)
-std = StockTechDailyDataDaoImpl(None)
-data = std.calc_tech_data("000065", "2020-12-21", yaml_config)
-# std.save_data_to_database(data)
+calc = TechIndicatorCalculator(engine=get_engine(), code="000001", date="2021-04-30")
+# param = {"time_period": 26}
+# vr = calc.calcVR(**param)
+# print(vr)
+# VR137.3  MAVR 122.96
+
+# param = {"time_period1": 6, "time_period2": 12}
+# print(calc.calcPSY(**param))
+
+# TODO: BUG FIX
+param = {"time_period1": 6, "time_period2": 12, "time_period3": 24}
+print(calc.calcRSI(**param))
+print(66.96, 63.58, 57.75)
+
+
+# param = {"time_period1": 12, "time_period2": 6}
+# print(calc.calcROC(**param))
+
+# param = {"time_period1": 10, "time_period2": 50, "time_period3": 10}
+# print(calc.calcDMA(**param))
+
+# param = {"time_period1": 12, "time_period2": 6}
+# print(calc.calcMTM(**param))
+
+# param = {"time_period1": 12, "time_period2": 26, "time_period3": 9}
+# print(calc.calcMACD(**param))
+# # DIF 0.5 DEA 0.27 MACD 0.46
+
+
+# param = {"time_period1": 9, "time_period2": 3, "time_period3": 3}
+# print(calc.calcKDJ(**param))

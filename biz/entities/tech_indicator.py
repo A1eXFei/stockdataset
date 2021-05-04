@@ -53,7 +53,7 @@ class TechIndicatorCalculator:
                     ma_3 = 0.0
 
             self.logger.debug("MA{0}: {1}, MA{2}: {3}, MA{4}: {5}".
-                         format(time_period1, ma_1, time_period2, ma_2, time_period3, ma_3))
+                              format(time_period1, ma_1, time_period2, ma_2, time_period3, ma_3))
             return ma_1, ma_2, ma_3
         except Exception as ex:
             self.logger.warning("股票代码{0}在计算日期{1}的MA是发生异常".format(self.code, self.date))
@@ -131,7 +131,7 @@ class TechIndicatorCalculator:
                     bias3 = 0.0
 
             self.logger.debug("BIAS{0}: {1}, BIAS{2}: {3}, BIAS{4}: {5}".
-                         format(time_period1, bias1, time_period2, bias2, time_period3, bias3))
+                              format(time_period1, bias1, time_period2, bias2, time_period3, bias3))
 
             return bias1, bias2, bias3
         except Exception as ex:
@@ -183,15 +183,15 @@ class TechIndicatorCalculator:
             time_period1 = kwargs["time_period1"]
             time_period2 = kwargs["time_period2"]
             time_period3 = kwargs["time_period3"]
-            max_time_period = max(time_period1, time_period2, time_period3)
 
-            basic_data = self._get_basic_data(max_time_period + 1)
+            basic_data = self._get_basic_data(time_period1 + time_period2 + 1)
 
-            if basic_data.shape[0] >= max_time_period + 1:
+            if basic_data.shape[0] >= time_period1 + time_period2 + 1:
                 basic_data['MA1'] = basic_data['TCLOSE'].rolling(window=time_period1).mean()
                 basic_data['MA2'] = basic_data['TCLOSE'].rolling(window=time_period2).mean()
                 basic_data['DMA'] = basic_data['MA1'] - basic_data['MA2']
                 basic_data['AMA'] = basic_data['DMA'].rolling(window=time_period3).mean()
+
                 dma = round(basic_data['DMA'].as_matrix()[-1], 3)
                 ama = round(basic_data['AMA'].as_matrix()[-1], 3)
 
@@ -216,15 +216,16 @@ class TechIndicatorCalculator:
         try:
             time_period1 = kwargs["time_period1"]
             time_period2 = kwargs["time_period2"]
-            max_time_period = max(time_period1, time_period2)
 
-            basic_data = self._get_basic_data(max_time_period + 1)
+            basic_data = self._get_basic_data(time_period1 + time_period2 + 1)
 
-            if basic_data.shape[0] >= max_time_period * 2:
-                basic_data['N_CLOSE'] = basic_data['TCLOSE'].shift(time_period1)
-                basic_data['MTM'] = basic_data['TCLOSE'] - basic_data['N_CLOSE']
+            if basic_data.shape[0] >= time_period1 + time_period2 + 1:
+                basic_data["N_CLOSE"] = basic_data["TCLOSE"].shift(time_period1)
+                basic_data["MTM"] = basic_data["TCLOSE"] - basic_data["N_CLOSE"]
+                basic_data["MAMTM"] = basic_data["MTM"].rolling(window=time_period2).mean()
+
                 mtm = round(basic_data['MTM'].as_matrix()[-1], 3)
-                mamtm = round(basic_data['MTM'].as_matrix()[-6:].sum() / float(time_period2), 3)
+                mamtm = round(basic_data['MAMTM'].as_matrix()[-1], 3)
 
             if np.isnan(mtm) or np.isinf(mtm) or np.isneginf(mtm):
                 mtm = 0.0
@@ -253,18 +254,14 @@ class TechIndicatorCalculator:
 
             if basic_data.shape[0] >= max_time_period + 1:
                 count = 0.0
-                # basic_data['P_CLOSE'] = basic_data['CLOSE'].shift(1)
-                basic_data['DIFF'] = basic_data['TCLOSE'] - basic_data['LCLOSE']
-                basic_data['DIFF'].fillna(0, inplace=True)
-
-                for each in basic_data[1:].itertuples():
-                    if each.DIFF > 0:
+                for each in basic_data[-time_period1:].itertuples():
+                    if each.CHG > 0:
                         count += 1.0
                 psy1 = round((count / time_period1 * 100), 3)
 
                 count = 0.0
-                for each in basic_data[-6:].itertuples():
-                    if each.DIFF > 0:
+                for each in basic_data[-time_period2:].itertuples():
+                    if each.CHG > 0:
                         count += 1.0
                 psy2 = round((count / time_period2 * 100), 3)
 
@@ -291,18 +288,18 @@ class TechIndicatorCalculator:
             basic_data = self._get_basic_data(time_period + 1)
 
             if basic_data.shape[0] >= time_period + 1:
+                u_volume = 0.0
+                d_volume = 0.0
                 p_volume = 0.0
-                n_volume = 0.0
-                # basic_data['P_CLOSE'] = basic_data['CLOSE'].shift(1)
-                basic_data['DIFF'] = basic_data['TCLOSE'] - basic_data['LCLOSE']
-                basic_data['DIFF'].fillna(0, inplace=True)
 
                 for each in basic_data[1:].itertuples():
-                    if each.DIFF >= 0:
-                        p_volume += each.VOTURNOVER
+                    if each.CHG > 0:
+                        u_volume += each.VOTURNOVER
+                    elif each.CHG < 0:
+                        d_volume += each.VOTURNOVER
                     else:
-                        n_volume += each.VOTURNOVER
-                vr = round(p_volume / n_volume * 100, 3)
+                        p_volume += each.VOTURNOVER
+                vr = round((u_volume + p_volume / 2) / (d_volume + p_volume / 2) * 100, 3)
 
                 if np.isnan(vr) or np.isinf(vr) or np.isneginf(vr):
                     vr = 0.0
@@ -370,23 +367,20 @@ class TechIndicatorCalculator:
             time_period1 = kwargs["time_period1"]  # short
             time_period2 = kwargs["time_period2"]  # long
             time_period3 = kwargs["time_period3"]  # mid
-            long = max(time_period1, time_period2, time_period3)
-            short = min(time_period1, time_period2, time_period3)
-            mid = time_period1 + time_period2 + time_period3 - long - short
+            max_time_period = max(time_period1, time_period2, time_period3)
 
-            basic_data = self._get_basic_data(long * 3)
+            basic_data = self._get_basic_data(max_time_period * 3)
 
-            if basic_data.shape[0] >= long * 3:
-                close = basic_data['TCLOSE'].values
-                ewma_short = pd.ewma(close, span=short)
-                ewma_long = pd.ewma(close, span=long)
-                difs = (ewma_short - ewma_long)
-                deas = pd.ewma(difs, span=mid)
-                macds = (difs - deas) * 2
+            if basic_data.shape[0] >= max_time_period * 3:
+                basic_data["EMA12"] = pd.DataFrame.ewm(basic_data['TCLOSE'], span=time_period1).mean()
+                basic_data["EMA26"] = pd.DataFrame.ewm(basic_data['TCLOSE'], span=time_period2).mean()
+                basic_data["DIF"] = basic_data["EMA12"] - basic_data["EMA26"]
+                basic_data["DEA"] = pd.DataFrame.ewm(basic_data['DIF'], span=time_period3).mean()
+                basic_data["MACD"] = (basic_data["DIF"] - basic_data["DEA"]) * 2
 
-                dif = round(difs[-1], 3)
-                dea = round(deas[-1], 3)
-                macd = round(macds[-1], 3)
+                dif = round(basic_data["DIF"].as_matrix()[-1], 3)
+                dea = round(basic_data["DEA"].as_matrix()[-1], 3)
+                macd = round(basic_data["MACD"].as_matrix()[-1], 3)
 
                 if np.isnan(dif) or np.isinf(dif) or np.isneginf(dif):
                     dif = 0.0
@@ -430,7 +424,8 @@ class TechIndicatorCalculator:
                 if np.isinf(lower_brand) or np.isnan(lower_brand) or np.isneginf(lower_brand):
                     lower_brand = 0.0
 
-            self.logger.debug("BOLL_UP: {0}, BOLL_MID: {1}, BOLL_LOW: {2}".format(upper_brand, middle_brand, lower_brand))
+            self.logger.debug(
+                "BOLL_UP: {0}, BOLL_MID: {1}, BOLL_LOW: {2}".format(upper_brand, middle_brand, lower_brand))
 
             return upper_brand, middle_brand, lower_brand
         except Exception as ex:
@@ -471,20 +466,22 @@ class TechIndicatorCalculator:
         try:
             time_period1 = kwargs["time_period1"]
             time_period2 = kwargs["time_period2"]
-            max_time_period = max(time_period1, time_period2)
 
-            basic_data = self._get_basic_data(max_time_period + 1)
+            basic_data = self._get_basic_data(time_period1 + time_period2 + 1)
 
-            if basic_data.shape[0] >= max_time_period + 1:
-                rocs = ta.ROC(basic_data['TCLOSE'].as_matrix(), time_period1)
-                roc = round(rocs[-1], 3)
-                maroc = round(rocs[-6:].sum() / float(time_period2), 3)
+            if basic_data.shape[0] >= time_period1 + time_period2 + 1:
+                basic_data["N_CLOSE"] = basic_data["TCLOSE"].shift(time_period1)
+                basic_data["DIFF"] = basic_data["TCLOSE"] - basic_data["N_CLOSE"]
+                basic_data["ROC"] = basic_data["DIFF"] / basic_data["N_CLOSE"]
+                basic_data['MAROC'] = basic_data['ROC'].rolling(window=time_period2).mean()
+
+                roc = round(basic_data["ROC"].as_matrix()[-1] * 100, 3)
+                maroc = round(basic_data["MAROC"].as_matrix()[-1] * 100, 3)
 
                 if np.isnan(roc) or np.isinf(roc) or np.isneginf(roc):
                     roc = 0.0
                 if np.isnan(maroc) or np.isinf(maroc) or np.isneginf(maroc):
                     maroc = 0.0
-
             self.logger.debug("ROC: {0}, MAROC: {1}".format(roc, maroc))
 
             return roc, maroc
@@ -505,9 +502,9 @@ class TechIndicatorCalculator:
             time_period3 = kwargs["time_period3"]
             max_time_period = max(time_period1, time_period2, time_period3)
 
-            basic_data = self._get_basic_data(max_time_period + 1)
+            basic_data = self._get_basic_data(max_time_period * 5)
 
-            if basic_data.shape[0] >= max_time_period + 1:
+            if basic_data.shape[0] >= max_time_period * 5:
                 rsi1 = round(ta.RSI(basic_data['TCLOSE'].as_matrix(), time_period1)[-1], 3)
                 rsi2 = round(ta.RSI(basic_data['TCLOSE'].as_matrix(), time_period2)[-1], 3)
                 rsi3 = round(ta.RSI(basic_data['TCLOSE'].as_matrix(), time_period3)[-1], 3)
@@ -520,7 +517,7 @@ class TechIndicatorCalculator:
                     rsi3 = 0.0
 
             self.logger.debug("RSI{0}: {1}, RSI{2}: {3}, RSI{4}: {5}".
-                         format(time_period1, rsi1, time_period2, rsi2, time_period3, rsi3))
+                              format(time_period1, rsi1, time_period2, rsi2, time_period3, rsi3))
 
             return rsi1, rsi2, rsi3
         except Exception as ex:
