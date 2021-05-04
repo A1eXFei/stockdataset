@@ -2,7 +2,7 @@
 import pandas as pd
 import logging
 import sqlalchemy
-from biz.entities.stock import Stock
+from biz.entities.orm_tables import Stock
 from sqlalchemy.orm import sessionmaker
 from utils import database as dbu
 

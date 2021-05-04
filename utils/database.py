@@ -34,6 +34,10 @@ def get_engine():
     return create_engine(conn)
 
 
+def get_conn():
+    return mysql.connector.connect(**config)
+
+
 def get_pd_data(sql):
     db_conn = mysql.connector.connect(**config)
     data = pd.read_sql_query(sql=sql, con=db_conn)
@@ -80,6 +84,24 @@ def update(sql):
     finally:
         cursor.close()
         cnx.close()
+
+
+# def insert(sql, val):
+#     result = None
+#     cnx = mysql.connector.connect(**config)
+#     cursor = cnx.cursor()
+#     try:
+#         cursor.execute(sql, val)
+#         cnx.commit()
+#         return
+#     except Exception as ex:
+#         result = ex
+#         logger.error(ex)
+#         cnx.rollback()
+#     finally:
+#         cursor.close()
+#         cnx.close()
+#         return result
 
 
 def call(procname, args=()):

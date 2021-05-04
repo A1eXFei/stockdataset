@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, Date, Integer, Float
-from biz.entities.tech_indicator import *
 
 
 Base = declarative_base()

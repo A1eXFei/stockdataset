@@ -1,7 +1,9 @@
 # -*- coding: UTF-8 -*-
+from warnings import simplefilter
 import yaml
 import utils.app as app
 
+simplefilter(action='ignore', category=FutureWarning)
 app.config_logger()
 yaml_file = open("../config/tech_indicator_params.yaml", 'r', encoding='utf-8')
 yaml_config = yaml.load(yaml_file.read())
@@ -17,8 +19,8 @@ yaml_config = yaml.load(yaml_file.read())
 # MA.calc(**d_param)
 #
 
-from biz.dao.stock_tech_daily import StockTechDailyDataDaoImpl
-print(yaml_config)
-std = StockTechDailyDataDaoImpl()
-data = std.calc_tech_data("000001", "2020-01-05", yaml_config)
-std.save_data_to_database(data)
+from biz.dao.stock_tech_indicator_dao import StockTechDailyDataDaoImpl
+# print(yaml_config)
+std = StockTechDailyDataDaoImpl(None)
+data = std.calc_tech_data("000065", "2020-12-21", yaml_config)
+# std.save_data_to_database(data)

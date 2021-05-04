@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import logging
 import yaml
-from biz.dao.stock_basic_info import *
+from biz.dao.stock_info_dao import *
 
 
 def load_weekly_data():
