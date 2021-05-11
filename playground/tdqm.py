@@ -21,6 +21,6 @@ for i in range(3):
     # print(len(result))
     print(count)
     decide = " NO GO"
-    if count >= 5:
+    if count >= 50:
         decide = " GO"
     print("{} time random result is :{}".format(i_map[i], decide))

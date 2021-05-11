@@ -1,4 +1,7 @@
 app:
+  export:
+    dir: D:\Output\dataset
+    split_year: False
   daily:
     num_process: 10
   weekly:

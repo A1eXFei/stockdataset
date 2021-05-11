@@ -39,9 +39,9 @@ def get_conn():
 
 
 def get_pd_data(sql):
-    db_conn = mysql.connector.connect(**config)
-    data = pd.read_sql_query(sql=sql, con=db_conn)
-    db_conn.close()
+    # db_conn = mysql.connector.connect(**config)
+    data = pd.read_sql_query(sql=sql, con=get_engine())
+    # db_conn.close()
     return data
 
 

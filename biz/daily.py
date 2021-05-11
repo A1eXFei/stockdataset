@@ -58,12 +58,12 @@ def load_daily_data(tech_config, num_process=5):
     sbi = StockBasicInfoDaoImpl()
     stocks = sbi.get_stock_codes()
 
-    num_stock = len(stocks)
-    num_stock = 50
+    # num_stock = len(stocks)
+    # num_stock = 50
 
     pool = mp.Pool(processes=num_process)
 
-    for code, last_update_date in stocks[:num_stock]:
+    for code, last_update_date in stocks:
         # TODO:// 放开测试限制
         start_date = du.date_to_string(last_update_date, '%Y-%m-%d')
         pool.apply_async(create_process, (tech_config, code, start_date, today))
