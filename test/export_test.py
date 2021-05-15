@@ -8,4 +8,6 @@ app_config = yaml.load(app_param_file.read())
 
 exp = Exporter(app_config["app"]["export"]["dir"])
 # exp.export_csv("000001", "2019", "2020")
-exp.export_all_csv("1990", "2020", app_config["app"]["export"]["split_year"])
+exp.export_all_csv(from_year="2010",
+                   to_year="2020",
+                   split_year=app_config["app"]["export"]["split_year"])

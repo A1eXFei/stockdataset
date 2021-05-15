@@ -1,5 +1,7 @@
 app:
   export:
+    from_year: 2010
+    to_year: 2020
     dir: D:\Output\dataset
     split_year: False
   daily:
