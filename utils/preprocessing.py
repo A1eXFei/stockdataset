@@ -22,7 +22,7 @@ class Preprocessing:
                 self._target_columns.append(FeatureColumns(col))
 
     def preprocessing(self):
-        self._df = self._df.iloc[self._config["rows"]["drop_first"]:self._config["rows"]["drop_last"]]
+        self._df = self._df.iloc[self._config["rows"]["drop_first"]:self._config["rows"]["drop_last"]*-1]
         label_columns = []
         # 1. 删除action为drop的列
         # 2. 保护标签列
@@ -31,7 +31,7 @@ class Preprocessing:
         # 5. 贴上标签列
 
         for col in self._target_columns:
-            print(col)
+            # print(col)
             if col.action == "drop":
                 self._df.drop(col.name, axis=1, inplace=True)
                 continue

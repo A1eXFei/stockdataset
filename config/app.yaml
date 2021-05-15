@@ -1,4 +1,10 @@
 app:
+  preprocessing:
+    input_dir: D:\Output\dataset
+    input_file_pattern: full
+    output_dir: D:\Output\preprocessing
+    output_file_prefix: preprocessing_
+    preprocess_config: ./config/preprocessing_config.yaml
   export:
     from_year: 2010
     to_year: 2020

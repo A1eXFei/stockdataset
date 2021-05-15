@@ -9,6 +9,10 @@
 > + 运行biz/weekly.py更新股票信息
 > + 运行biz/main.py更新个股行情信息
 
+####版本 v0.4.2
+> + 修复预处理中删除前后数据的bug
+> + 可以从main.py里添加参数运行程序 
+
 ####版本 v0.4.1
 > + 新的预处理配置文件用来预处理日期和数字类型的字段
 > + util/preprocessing.py下添加预处理方法和类，用法可以参考test/preprocessing_test.py

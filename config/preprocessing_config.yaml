@@ -1,6 +1,6 @@
 rows:
-  drop_first: 10
-  drop_last: 10
+  drop_first: 50
+  drop_last: 0
 columns:
   - column:
       name: CODE

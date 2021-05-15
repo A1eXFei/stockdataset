@@ -73,7 +73,7 @@ class Exporter:
         sbi = StockBasicInfoDaoImpl()
         stocks = sbi.get_stock_codes()
 
-        with tqdm(total=len(stocks), ncols=100) as pbar:
+        with tqdm(total=len(stocks), ncols=80) as pbar:
             for code, _ in stocks:
                 self.export_csv(code, from_year, to_year, split_year)
                 pbar.update(1)
