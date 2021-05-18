@@ -1,10 +1,12 @@
 app:
   preprocessing:
-    input_dir: D:\Output\dataset
+    input_dir: D:\Output\000001
     input_file_pattern: full
-    output_dir: D:\Output\preprocessing
+    output_dir: D:\Output\prep_000001
     output_file_prefix: preprocessing_
     preprocess_config: ./config/preprocessing_config.yaml
+    generate_seed: True
+    output_seed_file_prefix: seed_
   export:
     from_year: 2010
     to_year: 2020

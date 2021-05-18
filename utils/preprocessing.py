@@ -15,6 +15,7 @@ class Preprocessing:
         self._config = config
 
         self._parse_columns_attr()
+        self._column_seeds = []
 
     def _parse_columns_attr(self):
         for col in self._config["columns"]:
@@ -66,7 +67,7 @@ class Preprocessing:
         # print(self._df.head())
 
         label_columns.append(self._df)
-        return pd.concat(label_columns, axis=1)
+        return pd.concat(label_columns, axis=1), {"columns": self._column_seeds}
 
     def _date_feature(self, date_format="%Y-%m-%d"):
         for col in self._date_columns:
@@ -99,11 +100,19 @@ class Preprocessing:
 
     def _normalization(self):
         for column in self._norm_columns:
+            seed = {"name": column, "action": "normalization",
+                    "min": self._df[column].min().item(), "max": self._df[column].max().item()}
+            self._column_seeds.append({"column": seed})
+
             self._df[column] = (self._df[column] - self._df[column].min()) / (
                     self._df[column].max() - self._df[column].min())
 
     def _standardization(self):
         for column in self._std_columns:
+            seed = {"name": column, "action": "standardization",
+                    "min": self._df[column].mean().item(), "max": self._df[column].std().item()}
+            self._column_seeds.append({"column": seed})
+
             self._df[column] = (self._df[column] - self._df[column].mean()) / self._df[column].std()
 
 

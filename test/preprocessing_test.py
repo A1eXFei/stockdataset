@@ -48,5 +48,5 @@ for root, dirs, files in os.walk("D:\\Output\\dataset"):
         if "full" in f:
             print(os.path.join(root, f))
             prep = Preprocessing(data_frame=pd.read_csv(os.path.join(root, f)), config=app_config)
-            df = prep.preprocessing()
+            df, _ = prep.preprocessing()
             df.to_csv(os.path.join(output_dir, "preprocess_" + f), index=False)

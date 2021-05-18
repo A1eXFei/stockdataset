@@ -9,6 +9,9 @@
 > + 运行biz/weekly.py更新股票信息
 > + 运行biz/main.py更新个股行情信息
 
+####版本 v0.4.3
+> + 在app.yaml里可以generate_seed和output_seed_file_prefix配置是否导出预处理时候的最大/最小/均值等数据到yml
+
 ####版本 v0.4.2
 > + 修复预处理中删除前后数据的bug
 > + 可以从main.py里添加参数运行程序 
