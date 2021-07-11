@@ -40,13 +40,19 @@ output_dir = "D:\\Output\\preprocessing"
 preprocess_param_file = open("../config/preprocessing_config.yaml", "r", encoding="utf-8")
 app_config = yaml.load(preprocess_param_file.read())
 
-if not os.path.isdir(output_dir):
-    os.makedirs(output_dir)
+# if not os.path.isdir(output_dir):
+#     os.makedirs(output_dir)
+#
+# for root, dirs, files in os.walk("D:\\Output\\dataset"):
+#     for f in files:
+#         if "full" in f:
+#             print(os.path.join(root, f))
+#             prep = Preprocessing(data_frame=pd.read_csv(os.path.join(root, f)), config=app_config)
+#             df, _ = prep.preprocessing()
+#             df.to_csv(os.path.join(output_dir, "preprocess_" + f), index=False)
 
-for root, dirs, files in os.walk("D:\\Output\\dataset"):
-    for f in files:
-        if "full" in f:
-            print(os.path.join(root, f))
-            prep = Preprocessing(data_frame=pd.read_csv(os.path.join(root, f)), config=app_config)
-            df, _ = prep.preprocessing()
-            df.to_csv(os.path.join(output_dir, "preprocess_" + f), index=False)
+filename = "H:\\dataset\\003004\\full_003004.csv"
+filename2 = "H:\\dataset\\000004\\full_000004.csv"
+print(pd.read_csv(filename))
+prep = Preprocessing(data_frame=pd.read_csv(filename2), config=app_config)
+df, _ = prep.preprocessing()

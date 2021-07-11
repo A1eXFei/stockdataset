@@ -41,9 +41,9 @@ class TechIndicatorCalculator:
                 basic_data['MA2'] = basic_data['TCLOSE'].rolling(window=time_period2).mean()
                 basic_data['MA3'] = basic_data['TCLOSE'].rolling(window=time_period3).mean()
 
-                ma_1 = round(basic_data['MA1'].as_matrix()[-1], 3)
-                ma_2 = round(basic_data['MA2'].as_matrix()[-1], 3)
-                ma_3 = round(basic_data['MA3'].as_matrix()[-1], 3)
+                ma_1 = round(basic_data['MA1'].values[-1], 3)
+                ma_2 = round(basic_data['MA2'].values[-1], 3)
+                ma_3 = round(basic_data['MA3'].values[-1], 3)
 
                 if np.isnan(ma_1) or np.isinf(ma_1) or np.isneginf(ma_1):
                     ma_1 = 0.0
@@ -83,7 +83,7 @@ class TechIndicatorCalculator:
                                      basic_data['MA3'] +
                                      basic_data['MA4']) / 4
 
-                bbi = round(basic_data['BBI'].as_matrix()[-1], 3)
+                bbi = round(basic_data['BBI'].values[-1], 3)
 
                 if np.isnan(bbi) or np.isinf(bbi) or np.isneginf(bbi):
                     bbi = 0.0
@@ -114,14 +114,14 @@ class TechIndicatorCalculator:
                 basic_data['MA1'] = basic_data['TCLOSE'].rolling(window=time_period1).mean()
                 basic_data['MA2'] = basic_data['TCLOSE'].rolling(window=time_period2).mean()
                 basic_data['MA3'] = basic_data['TCLOSE'].rolling(window=time_period3).mean()
-                close = basic_data['TCLOSE'].as_matrix()[-1]
+                close = basic_data['TCLOSE'].values[-1]
                 basic_data['BIAS1'] = (close - basic_data['MA1']) * 100 / basic_data['MA1']
                 basic_data['BIAS2'] = (close - basic_data['MA2']) * 100 / basic_data['MA2']
                 basic_data['BIAS3'] = (close - basic_data['MA3']) * 100 / basic_data['MA3']
 
-                bias1 = round(basic_data['BIAS1'].as_matrix()[-1], 3)
-                bias2 = round(basic_data['BIAS2'].as_matrix()[-1], 3)
-                bias3 = round(basic_data['BIAS3'].as_matrix()[-1], 3)
+                bias1 = round(basic_data['BIAS1'].values[-1], 3)
+                bias2 = round(basic_data['BIAS2'].values[-1], 3)
+                bias3 = round(basic_data['BIAS3'].values[-1], 3)
 
                 if np.isinf(bias1) or np.isnan(bias1) or np.isneginf(bias1):
                     bias1 = 0.0
@@ -192,8 +192,8 @@ class TechIndicatorCalculator:
                 basic_data['DMA'] = basic_data['MA1'] - basic_data['MA2']
                 basic_data['AMA'] = basic_data['DMA'].rolling(window=time_period3).mean()
 
-                dma = round(basic_data['DMA'].as_matrix()[-1], 3)
-                ama = round(basic_data['AMA'].as_matrix()[-1], 3)
+                dma = round(basic_data['DMA'].values[-1], 3)
+                ama = round(basic_data['AMA'].values[-1], 3)
 
                 if np.isnan(dma) or np.isinf(dma) or np.isneginf(dma):
                     dma = 0.0
@@ -224,8 +224,8 @@ class TechIndicatorCalculator:
                 basic_data["MTM"] = basic_data["TCLOSE"] - basic_data["N_CLOSE"]
                 basic_data["MAMTM"] = basic_data["MTM"].rolling(window=time_period2).mean()
 
-                mtm = round(basic_data['MTM'].as_matrix()[-1], 3)
-                mamtm = round(basic_data['MAMTM'].as_matrix()[-1], 3)
+                mtm = round(basic_data['MTM'].values[-1], 3)
+                mamtm = round(basic_data['MAMTM'].values[-1], 3)
 
             if np.isnan(mtm) or np.isinf(mtm) or np.isneginf(mtm):
                 mtm = 0.0
@@ -338,9 +338,9 @@ class TechIndicatorCalculator:
                 basic_data['KDJ_K'] = basic_data['RSV'].ewm(com=(time_period2 - 1)).mean()
                 basic_data['KDJ_D'] = basic_data['KDJ_K'].ewm(com=(time_period2 - 1)).mean()
                 basic_data['KDJ_J'] = 3 * basic_data['KDJ_K'] - 2 * basic_data['KDJ_D']
-                kdj_k = round(basic_data['KDJ_K'].as_matrix()[-1], 3)
-                kdj_d = round(basic_data['KDJ_D'].as_matrix()[-1], 3)
-                kdj_j = round(basic_data['KDJ_J'].as_matrix()[-1], 3)
+                kdj_k = round(basic_data['KDJ_K'].values[-1], 3)
+                kdj_d = round(basic_data['KDJ_D'].values[-1], 3)
+                kdj_j = round(basic_data['KDJ_J'].values[-1], 3)
 
                 if np.isnan(kdj_d) or np.isinf(kdj_d) or np.isneginf(kdj_d):
                     kdj_d = 0.0
@@ -378,9 +378,9 @@ class TechIndicatorCalculator:
                 basic_data["DEA"] = pd.DataFrame.ewm(basic_data['DIF'], span=time_period3).mean()
                 basic_data["MACD"] = (basic_data["DIF"] - basic_data["DEA"]) * 2
 
-                dif = round(basic_data["DIF"].as_matrix()[-1], 3)
-                dea = round(basic_data["DEA"].as_matrix()[-1], 3)
-                macd = round(basic_data["MACD"].as_matrix()[-1], 3)
+                dif = round(basic_data["DIF"].values[-1], 3)
+                dea = round(basic_data["DEA"].values[-1], 3)
+                macd = round(basic_data["MACD"].values[-1], 3)
 
                 if np.isnan(dif) or np.isinf(dif) or np.isneginf(dif):
                     dif = 0.0
@@ -411,7 +411,7 @@ class TechIndicatorCalculator:
             basic_data = self._get_basic_data(time_period + 1)
 
             if basic_data.shape[0] >= time_period + 1:
-                upper_brands, middle_brands, lower_brands = ta.BBANDS(basic_data['TCLOSE'].as_matrix(),
+                upper_brands, middle_brands, lower_brands = ta.BBANDS(basic_data['TCLOSE'].values,
                                                                       time_period, nbdev_up, nbdev_down)
                 upper_brand = round(upper_brands[-1], 3)
                 middle_brand = round(middle_brands[-1], 3)
@@ -443,9 +443,9 @@ class TechIndicatorCalculator:
             basic_data = self._get_basic_data(time_period + 1)
 
             if basic_data.shape[0] >= time_period + 1:
-                cci = round(ta.CCI(basic_data['HIGH'].as_matrix(),
-                                   basic_data['LOW'].as_matrix(),
-                                   basic_data['TCLOSE'].as_matrix(), time_period)[-1], 3)
+                cci = round(ta.CCI(basic_data['HIGH'].values,
+                                   basic_data['LOW'].values,
+                                   basic_data['TCLOSE'].values, time_period)[-1], 3)
 
                 if np.isnan(cci) or np.isinf(cci) or np.isneginf(cci):
                     cci = 0.0
@@ -475,8 +475,8 @@ class TechIndicatorCalculator:
                 basic_data["ROC"] = basic_data["DIFF"] / basic_data["N_CLOSE"]
                 basic_data['MAROC'] = basic_data['ROC'].rolling(window=time_period2).mean()
 
-                roc = round(basic_data["ROC"].as_matrix()[-1] * 100, 3)
-                maroc = round(basic_data["MAROC"].as_matrix()[-1] * 100, 3)
+                roc = round(basic_data["ROC"].values[-1] * 100, 3)
+                maroc = round(basic_data["MAROC"].values[-1] * 100, 3)
 
                 if np.isnan(roc) or np.isinf(roc) or np.isneginf(roc):
                     roc = 0.0
@@ -505,9 +505,9 @@ class TechIndicatorCalculator:
             basic_data = self._get_basic_data(max_time_period * 5)
 
             if basic_data.shape[0] >= max_time_period * 5:
-                rsi1 = round(ta.RSI(basic_data['TCLOSE'].as_matrix(), time_period1)[-1], 3)
-                rsi2 = round(ta.RSI(basic_data['TCLOSE'].as_matrix(), time_period2)[-1], 3)
-                rsi3 = round(ta.RSI(basic_data['TCLOSE'].as_matrix(), time_period3)[-1], 3)
+                rsi1 = round(ta.RSI(basic_data['TCLOSE'].values, time_period1)[-1], 3)
+                rsi2 = round(ta.RSI(basic_data['TCLOSE'].values, time_period2)[-1], 3)
+                rsi3 = round(ta.RSI(basic_data['TCLOSE'].values, time_period3)[-1], 3)
 
                 if np.isnan(rsi1) or np.isinf(rsi1) or np.isneginf(rsi1):
                     rsi1 = 0.0
@@ -538,13 +538,13 @@ class TechIndicatorCalculator:
             basic_data = self._get_basic_data(max_time_period + 1)
 
             if basic_data.shape[0] >= max_time_period + 1:
-                wr1 = round(ta.WILLR(basic_data['HIGH'].as_matrix(),
-                                     basic_data['LOW'].as_matrix(),
-                                     basic_data['TCLOSE'].as_matrix(),
+                wr1 = round(ta.WILLR(basic_data['HIGH'].values,
+                                     basic_data['LOW'].values,
+                                     basic_data['TCLOSE'].values,
                                      time_period1)[-1] * -1, 3)
-                wr2 = round(ta.WILLR(basic_data['HIGH'].as_matrix(),
-                                     basic_data['LOW'].as_matrix(),
-                                     basic_data['TCLOSE'].as_matrix(),
+                wr2 = round(ta.WILLR(basic_data['HIGH'].values,
+                                     basic_data['LOW'].values,
+                                     basic_data['TCLOSE'].values,
                                      time_period2)[-1] * -1, 3)
 
                 if np.isnan(wr1) or np.isinf(wr1) or np.isneginf(wr1):

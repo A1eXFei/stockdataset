@@ -1,9 +1,10 @@
 app:
   preprocessing:
-    input_dir: D:\Output\000001
+    input_dir: H:\dataset
     input_file_pattern: full
-    output_dir: D:\Output\prep_000001
+    output_dir: H:\preprocessing
     output_file_prefix: preprocessing_
+    keep_header: False
     preprocess_config: ./config/preprocessing_config.yaml
     generate_seed: True
     output_seed_file_prefix: seed_
@@ -12,6 +13,7 @@ app:
     to_year: 2020
     dir: D:\Output\dataset
     split_year: False
+    keep_header: True
   daily:
     num_process: 10
   weekly:

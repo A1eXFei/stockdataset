@@ -1,4 +1,7 @@
 # -*- coding: UTF-8 -*-
+import numpy
+
+import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
@@ -26,7 +29,11 @@ class Preprocessing:
         if self._config["rows"]["drop_last"] == 0:
             self._df = self._df.iloc[self._config["rows"]["drop_first"]:]
         else:
-            self._df = self._df.iloc[self._config["rows"]["drop_first"]:self._config["rows"]["drop_last"]*-1]
+            self._df = self._df.iloc[self._config["rows"]["drop_first"]:self._config["rows"]["drop_last"] * -1]
+
+        if self._df.shape[0] == 0:
+            return self._df, None
+
         label_columns = []
         # 1. 删除action为drop的列
         # 2. 保护标签列
@@ -101,7 +108,8 @@ class Preprocessing:
     def _normalization(self):
         for column in self._norm_columns:
             seed = {"name": column, "action": "normalization",
-                    "min": self._df[column].min().item(), "max": self._df[column].max().item()}
+                    "min": self._df[column].min().item(),
+                    "max": self._df[column].max().item()}
             self._column_seeds.append({"column": seed})
 
             self._df[column] = (self._df[column] - self._df[column].min()) / (

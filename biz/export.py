@@ -14,7 +14,7 @@ class Exporter:
         self.sql_tech_data = "SELECT * FROM tb_stock_tech_daily t"
         self.sql_tech_data = "SELECT * FROM vw_stock_data_daily t"
 
-    def export_csv(self, code, from_year, to_year, split_year=True):
+    def export_csv(self, code, from_year, to_year, split_year=True, keep_header=True):
         def _export():
             basic_data_filename = "basic_" + code + ".csv"
             tech_data_filename = "tech_" + code + ".csv"
@@ -32,15 +32,15 @@ class Exporter:
                 if not os.path.isdir(current_dir):
                     os.makedirs(current_dir)
 
-                basic_data.to_csv(os.path.join(current_dir, basic_data_filename), index=False)
+                basic_data.to_csv(os.path.join(current_dir, basic_data_filename), index=False, header=keep_header)
 
             tech_data = get_pd_data(sql_tech_data)
             if tech_data.shape[0] > 0:
-                tech_data.to_csv(os.path.join(current_dir, tech_data_filename), index=False)
+                tech_data.to_csv(os.path.join(current_dir, tech_data_filename), index=False, header=keep_header)
 
             full_data = get_pd_data(sql_full_data)
             if full_data.shape[0] > 0:
-                full_data.to_csv(os.path.join(current_dir, full_data_filename), index=False)
+                full_data.to_csv(os.path.join(current_dir, full_data_filename), index=False, header=keep_header)
 
         end_year = to_year
         # int(to_year[:4])
@@ -69,13 +69,12 @@ class Exporter:
 
         # self.logger.info("股票代码：" + code + "所有数据导出完毕")
 
-    def export_all_csv(self, from_year, to_year, split_year=True):
+    def export_all_csv(self, from_year, to_year, split_year=True, keep_header=True):
         sbi = StockBasicInfoDaoImpl()
         stocks = sbi.get_stock_codes()
 
         with tqdm(total=len(stocks), ncols=80) as pbar:
             for code, _ in stocks:
-                self.export_csv(code, from_year, to_year, split_year)
+                self.export_csv(code, from_year, to_year, split_year, keep_header)
                 pbar.update(1)
                 pbar.set_description("导出中...")
-

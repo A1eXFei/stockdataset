@@ -26,7 +26,8 @@ if __name__ == "__main__":
         exp = Exporter(master_config["app"]["export"]["dir"])
         exp.export_all_csv(from_year=master_config["app"]["export"]["from_year"],
                            to_year=master_config["app"]["export"]["to_year"],
-                           split_year=master_config["app"]["export"]["split_year"])
+                           split_year=master_config["app"]["export"]["split_year"],
+                           keep_header=master_config["app"]["export"]["keep_header"])
     elif sys.argv[1] == "preprocess":
         preprocessing(master_config)
     else:

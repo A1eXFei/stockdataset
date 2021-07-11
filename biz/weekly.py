@@ -38,14 +38,17 @@ def preprocessing(app_config):
                 logger.info("预处理文件%s" % f)
                 prep = Preprocessing(data_frame=pd.read_csv(os.path.join(root, f)), config=preprocess_config)
                 df, seeds = prep.preprocessing()
-                df.to_csv(os.path.join(output_dir, output_file_prefix + f), index=False)
+                if df.shape[0] > 0:
+                    df.to_csv(os.path.join(output_dir, output_file_prefix + f),
+                              index=False,
+                              header=app_config["app"]["preprocessing"]["keep_header"])
 
-                if app_config["app"]["preprocessing"]["generate_seed"]:
-                    logger.info("导出种子文件%s" % f)
-                    output_seed_file_prefix = app_config["app"]["preprocessing"]["output_seed_file_prefix"]
-                    with open(os.path.join(output_dir, output_seed_file_prefix + f[:-4] + ".yml"), "w",
-                              encoding="utf-8") as sf:
-                        yaml.dump(seeds, sf)
+                    if app_config["app"]["preprocessing"]["generate_seed"]:
+                        logger.info("导出种子文件%s" % f[:-4] + ".yml")
+                        output_seed_file_prefix = app_config["app"]["preprocessing"]["output_seed_file_prefix"]
+                        with open(os.path.join(output_dir, output_seed_file_prefix + f[:-4] + ".yml"), "w",
+                                  encoding="utf-8") as sf:
+                            yaml.dump(seeds, sf)
 
     logger.info("预处理完成")
 
