@@ -9,6 +9,10 @@
 > + 运行biz/weekly.py更新股票信息
 > + 运行biz/main.py更新个股行情信息
 
+####版本 v0.4.5
+> + 用df.values替换df.as_matrix()
+> + 更新requirements.txt
+
 ####版本 v0.4.4
 > + 在app.yaml里添加keep_header选项
 > + 修复了在预处理时，如果去掉前后行之后，dataframe为空的情况下，不生成预处理文件
