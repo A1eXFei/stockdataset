@@ -9,6 +9,11 @@
 > + 运行biz/weekly.py更新股票信息
 > + 运行biz/main.py更新个股行情信息
 
+####版本 v0.4.6
+> + 新模块rpt/batch/为每日导数导出没有更新的股票条数
+> + 导出seed文件时，强制把最大/小值转换成pd.Series类型
+> + seed文件更新结构
+
 ####版本 v0.4.5
 > + 用df.values替换df.as_matrix()
 > + 更新requirements.txt

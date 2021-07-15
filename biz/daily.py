@@ -5,6 +5,7 @@ from datetime import *
 from biz.dao.stock_info_dao import StockBasicInfoDaoImpl
 from biz.dao.stock_basic_data_dao import StockBasicDailyDataDaoImpl
 from biz.dao.stock_tech_indicator_dao import StockTechDailyDataDaoImpl
+from rpt.batch import BatchReport
 from utils import date as du
 from utils import app
 from utils import database as dbu
@@ -71,3 +72,5 @@ def load_daily_data(tech_config, num_process=5):
     pool.join()
 
     logger.info("所有的导入完成")
+    rpt = BatchReport()
+    rpt.load_report()

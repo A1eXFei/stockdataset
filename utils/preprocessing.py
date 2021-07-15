@@ -42,7 +42,6 @@ class Preprocessing:
         # 5. 贴上标签列
 
         for col in self._target_columns:
-            # print(col)
             if col.action == "drop":
                 self._df.drop(col.name, axis=1, inplace=True)
                 continue
@@ -107,19 +106,20 @@ class Preprocessing:
 
     def _normalization(self):
         for column in self._norm_columns:
-            seed = {"name": column, "action": "normalization",
-                    "min": self._df[column].min().item(),
-                    "max": self._df[column].max().item()}
-            self._column_seeds.append({"column": seed})
+            seed = {"action": "normalization",
+                    "min": pd.Series(self._df[column].min()).item(),
+                    "max": pd.Series(self._df[column].max()).item()}
+            self._column_seeds.append({column: seed})
 
             self._df[column] = (self._df[column] - self._df[column].min()) / (
                     self._df[column].max() - self._df[column].min())
 
     def _standardization(self):
         for column in self._std_columns:
-            seed = {"name": column, "action": "standardization",
-                    "min": self._df[column].mean().item(), "max": self._df[column].std().item()}
-            self._column_seeds.append({"column": seed})
+            seed = {"action": "standardization",
+                    "min": pd.Series(self._df[column].mean()).item(),
+                    "max": pd.Series(self._df[column].std()).item()}
+            self._column_seeds.append({column: seed})
 
             self._df[column] = (self._df[column] - self._df[column].mean()) / self._df[column].std()
 
