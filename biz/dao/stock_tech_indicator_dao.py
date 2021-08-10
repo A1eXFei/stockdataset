@@ -1,9 +1,9 @@
 # -*- coding: UTF-8 -*-
 import logging
 # import tracemalloc
-from biz.entities.orm_tables import DailyTechData
-from biz.entities.tech_indicator import *
-# from biz.entities.stock_tech_indicator import StockDailyTechData
+from biz.entity.tables import DailyTechData
+from biz.entity.tech_indicator import *
+# from biz.entity.stock_tech_indicator import StockDailyTechData
 from sqlalchemy.orm import Session
 # from utils import database as dbu
 

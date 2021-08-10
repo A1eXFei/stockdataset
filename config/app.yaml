@@ -5,7 +5,7 @@ app:
     output_dir: H:\preprocessing
     output_file_prefix: preprocessing_
     keep_header: False
-    preprocess_config: ./config/preprocessing_config.yaml
+    preprocess_config: ./config/full_data_preprocessing_config.yaml
     generate_seed: True
     output_seed_file_prefix: seed_
   export:

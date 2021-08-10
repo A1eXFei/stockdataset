@@ -53,7 +53,7 @@ columns:
       action: normalization
   - column:
       name: VOTURNOVER
-      dtype: string
+      dtype: numeric
       attr: [feature]
       action: normalization
   - column:

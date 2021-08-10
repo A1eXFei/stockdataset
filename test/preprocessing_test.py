@@ -28,7 +28,7 @@ p1 = pd.DataFrame([[1, 2, "t", "b"],
 import yaml
 
 # df = pd.read_csv("D:\\Output\\BASIC_000001.csv")
-# preprocess_param_file = open("../config/preprocessing_config.yaml", "r", encoding="utf-8")
+# preprocess_param_file = open("../config/full_data_preprocessing_config.yaml", "r", encoding="utf-8")
 # app_config = yaml.load(preprocess_param_file.read())
 #
 # prep = Preprocessing(data_frame=df, config=app_config)
@@ -37,7 +37,7 @@ import yaml
 import os
 
 output_dir = "D:\\Output\\preprocessing"
-preprocess_param_file = open("../config/preprocessing_config.yaml", "r", encoding="utf-8")
+preprocess_param_file = open("../config/full_data_preprocessing_config.yaml", "r", encoding="utf-8")
 app_config = yaml.load(preprocess_param_file.read())
 
 # if not os.path.isdir(output_dir):

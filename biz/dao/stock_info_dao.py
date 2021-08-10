@@ -2,9 +2,11 @@
 import pandas as pd
 import logging
 import sqlalchemy
-from biz.entities.orm_tables import Stock
+from biz.entity.tables import Stock
 from sqlalchemy.orm import sessionmaker
 from utils import database as dbu
+from utils.crawler import crawl_company_info
+
 
 DEFAULT_LAST_UPDATE_DATE = '1991-01-01'
 
@@ -84,7 +86,19 @@ class StockBasicInfoDaoImpl:
             self.logger.info("更新股票代码: " + code)
             sess = sessionmaker(bind=dbu.get_engine())()
             stock = sess.query(Stock).filter_by(code=code).one()
-            # TODO: 更新股票的信息
+            data = crawl_company_info(code)
+            stock.type = data["type"]
+            stock.region = data["region"]
+            stock.short_name = data["short_name"]
+            stock.address = data["address"]
+            stock.full_name = data["full_name"]
+            stock.telephone = data["telephone"]
+            stock.email = data["email"]
+            stock.english_name = data["english_name"]
+            stock.capital = data["capital"]
+            stock.chairman = data["chairman"]
+            stock.main_business = data["main_business"]
+            stock.industry = data["industry"]
             sess.add(stock)
             sess.commit()
         except Exception as ex:

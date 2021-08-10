@@ -2,7 +2,7 @@
 from warnings import simplefilter
 simplefilter(action='ignore', category=FutureWarning)
 
-from biz.entities.tech_indicator import TechIndicatorCalculator
+from biz.entity.tech_indicator import TechIndicatorCalculator
 from utils.database import get_engine
 
 calc = TechIndicatorCalculator(engine=get_engine(), code="000001", date="2021-04-30")

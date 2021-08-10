@@ -17,6 +17,16 @@ class Stock(Base):
     first_date_to_market = Column(Date, name="FIRST_DATE_TO_MARKET")
     total_share = Column(Integer, name="TOTAL_SHARE")
     share_in_market = Column(Integer, name="SHARE_IN_MARKET")
+    type = Column(String, name="TYPE")
+    region = Column(String, name="REGION")
+    short_name = Column(String, name="SHORT_NAME")
+    full_name = Column(String, name="FULL_NAME")
+    english_name = Column(String, name="ENGLISH_NAME")
+    email = Column(String, name="EMAIL")
+    telephone = Column(String, name="TELEPHONE")
+    capital = Column(String, name="CAPITAL")
+    chairman = Column(String, name="CHAIRMAN")
+    main_business = Column(String, name="MAIN_BUSINESS")
 
     def __repr__(self):
         return "<Stock(CODE='%s', NAME='%s', LASTUPDATEDATE='%s')>" % \

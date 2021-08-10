@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 import numpy
-
+import logging
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
@@ -18,7 +18,8 @@ class Preprocessing:
         self._config = config
 
         self._parse_columns_attr()
-        self._column_seeds = []
+        self._column_seeds = {}
+        self.logger = logging.getLogger("appLogger")
 
     def _parse_columns_attr(self):
         for col in self._config["columns"]:
@@ -105,21 +106,34 @@ class Preprocessing:
                 self._std_columns.append(col.name + "_WEEKOFYEAR")
 
     def _normalization(self):
-        for column in self._norm_columns:
-            seed = {"action": "normalization",
-                    "min": pd.Series(self._df[column].min()).item(),
-                    "max": pd.Series(self._df[column].max()).item()}
-            self._column_seeds.append({column: seed})
+        if "LOW" in self._df.columns:
+            LOW = self._df["LOW"].min()
+            HIGH = self._df["HIGH"].max()
 
-            self._df[column] = (self._df[column] - self._df[column].min()) / (
-                    self._df[column].max() - self._df[column].min())
+        for column in self._norm_columns:
+            self.logger.debug("归一化处理列" + column)
+            if column in ["TCLOSE", "HIGH", "LOW", "TOPEN", "LCLOSE"]:
+                low_val = LOW
+                high_val = HIGH
+                self.logger.debug("使用HLOC作为最大最小值，最大值是{}, 最小值是{}".format(high_val, low_val))
+            else:
+                low_val = self._df[column].min()
+                high_val = self._df[column].max()
+                self.logger.debug("使用{}作为最大最小值，最大值是{}, 最小值是{}".format(column, high_val, low_val))
+
+            seed = {"action": "normalization",
+                    "min": pd.Series(low_val).item(),
+                    "max": pd.Series(high_val).item()}
+            self._column_seeds[column] = seed
+
+            self._df[column] = (self._df[column] - low_val) / (high_val - low_val)
 
     def _standardization(self):
         for column in self._std_columns:
             seed = {"action": "standardization",
                     "min": pd.Series(self._df[column].mean()).item(),
                     "max": pd.Series(self._df[column].std()).item()}
-            self._column_seeds.append({column: seed})
+            self._column_seeds[column] = seed
 
             self._df[column] = (self._df[column] - self._df[column].mean()) / self._df[column].std()
 
