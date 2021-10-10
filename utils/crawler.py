@@ -1,9 +1,11 @@
 # -*- coding: UTF-8 -*-
 import requests
+import pandas as pd
 from lxml import etree
 from const import *
 from const.netease import *
 from utils.app import *
+from tempfile import TemporaryFile
 
 
 def get_163_urls(code):
@@ -62,3 +64,38 @@ def crawl_company_info(code):
     for key in company_info:
         print(key + "\t" + str(company_info[key]))
     return company_info
+
+
+def crawl_main_financial_data(code, report_period="report", report_type=None):
+    # "http://quotes.money.163.com/service/zycwzb_000001.html?type=season"
+    # "http://quotes.money.163.com/service/zycwzb_000001.html?type=report"
+    if report_period not in ["report", "season", "year"]:
+        raise ValueError("主要财务指标类型错误，支持report, season, year")
+
+    urls = get_163_urls(code)
+    url = urls["主要财务指标"]
+
+    if report_type is None:
+        url = (url[:url.index("#")] + "?type=" + report_period).replace("f10", "service")
+    elif report_type in ["ylnl", "chnl", "cznl", "yynl"]:
+        url = (url[:url.index("#")] + "?type=" + report_period).replace("f10", "service") + "&part=" + report_type
+    else:
+        raise ValueError("报表类型错误，支持ylnl, chnl, cznl, yynl")
+
+    print(url)
+    r = requests.get(url, {"type": report_type})
+    if r.status_code == 200:
+        temp = TemporaryFile()
+        temp.write(bytes(r.text, encoding="utf-8"))
+        temp.seek(0)
+        df = pd.read_csv(temp)
+        df = df.transpose()
+        df.reset_index(inplace=True)
+        df.columns = df.iloc[0]
+        df.drop([0, df.shape[0]-1], inplace=True)
+        df.set_index("报告日期", inplace=True)
+        print(df)
+        temp.close()
+        return df
+    else:
+        return None

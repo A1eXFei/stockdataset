@@ -9,7 +9,7 @@ import numpy as np
 from const import *
 from utils import database as dbu
 from utils.app import code_to_symbol
-from biz.entity.tables import Stock, DailyBasicData
+from biz.entity.tables import StockInfo, DailyBasicData
 # from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 
@@ -45,13 +45,13 @@ class StockBasicDailyDataDaoImpl:
         df_max_date = df.index.values.max()
         if df_max_date != end_date:
             self.logger.warning("股票代码" + code +
-                                "结束日志(" + end_date + ")与163获取的最后日期(" + df_max_date + ")不相符!")
+                                "结束日期(" + end_date + ")与163获取的最后日期(" + df_max_date + ")不相符!")
 
         with Session(self.engine) as db_sess:
             # db_sess = self.sess_factory()
             db_sess.begin()
             try:
-                stock = db_sess.query(Stock).filter_by(code=code).one()
+                stock = db_sess.query(StockInfo).filter_by(code=code).one()
                 stock.last_update_date = df_max_date
                 db_sess.add(stock)
                 db_sess.commit()

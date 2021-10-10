@@ -6,8 +6,8 @@ from sqlalchemy import Column, String, Date, Integer, Float
 Base = declarative_base()
 
 
-class Stock(Base):
-    __tablename__ = 'tb_stock_list'
+class StockInfo(Base):
+    __tablename__ = 'tb_stock_info'
 
     code = Column(String, name="CODE", primary_key=True)
     name = Column(String, name="NAME")
@@ -96,3 +96,112 @@ class DailyTechData(Base):
 
     def __repr__(self):
         return "<Stock Tech Daily(CODE='%s', DATE='%s')>" % (self.code, self.date)
+
+
+class FinancialZYCWZB(Base):
+    __tablename__ = "tb_stock_financial_zycwzb"
+
+    code = Column(String, name="CODE", primary_key=True)
+    date = Column(Date, name="DATE", primary_key=True)
+    period_type = Column(String, name="PERIOD_TYPE", primary_key=True)
+    jbmgsy_y = Column(Float, name="JBMGSY_Y")
+    mgjzc_y = Column(Float, name="MGJZC_Y")
+    mgjyhdcsdxjllje_y = Column(Float, name="MGJYHDCSDXJLLJE_Y")
+    zyywsr_wy = Column(Float, name="ZYYWSR_WY")
+    zyywlr_wy = Column(Float, name="ZYYWLR_WY")
+    yylr_wy = Column(Float, name="YYLR_WY")
+    tzsy_wy = Column(Float, name="TZSY_WY")
+    yywszje_wy = Column(Float, name="YYWSZJE_WY")
+    lrze_wy = Column(Float, name="LRZE_WY")
+    jlr_wy = Column(Float, name="JLR_WY")
+    jrr_kcfjcxsyh_wy = Column(Float, name="JLR_KCFJCXSYH_WY")
+    jyhdcsdxjllje_wy = Column(Float, name="JYHDCSDXJLLJE_WY")
+    xjjxjdjwjzje_wy = Column(Float, name="XJJXJDJWJZJE_WY")
+    zzc_wy = Column(Float, name="ZZC_WY")
+    ldzc_wy = Column(Float, name="LDZC_WY")
+    zfz_wy = Column(Float, name="ZFZ_WY")
+    ldfz_wy = Column(Float, name="LDFZ_WY")
+    dgqy_wy = Column(Float, name="GDQY_WY")
+    zjcsyljq = Column(Float, name="JZCSYLJQ")
+
+
+class FinancialYYNL(Base):
+    __tablename__ = "tb_stock_financial_yynl"
+
+    code = Column(String, name="CODE", primary_key=True)
+    date = Column(Date, name="DATE", primary_key=True)
+    period_type = Column(String, name="PERIOD_TYPE", primary_key=True)
+    yszkzzl = Column(Float, name="YSZKZZL")
+    yszkzts = Column(Float, name="YSZKZZTS")
+    chzzl = Column(Float, name="CHZZL")
+    gdzczzl = Column(Float, name="GDZCZZL")
+    zzczzl = Column(Float, name="ZZCZZL")
+    chzzts = Column(Float, name="CHZZTS")
+    zzczzts = Column(Float, name="ZZCZZTS")
+    ldzczzl = Column(Float, name="LDZCZZL")
+    ldzczzts = Column(Float, name="LDZCZZTS")
+    jyxjjlldxssrbl = Column(Float, name="JYXJJLLDXSSRBL")
+    zcdjyxjllhbl = Column(Float, name="ZCDJYXJLLHBL")
+    jyxjjllyjlrdbl = Column(Float, name="JYXJJLLYJLRDBL")
+    jyxjjlldfzbl = Column(Float, name="JYXJJLLDFZBL")
+    xjllbl = Column(Float, name="XJLLBL")
+
+
+class FinancialYLNL(Base):
+    __tablename__ = "tb_stock_financial_ylnl"
+
+    code = Column(String, name="CODE", primary_key=True)
+    date = Column(Date, name="DATE", primary_key=True)
+    period_type = Column(String, name="PERIOD_TYPE", primary_key=True)
+    zzclrl = Column(Float, name="ZZCLRL")
+    zyywlrl = Column(Float, name="ZYYWLRL")
+    zzcjlrl = Column(Float, name="ZZCJLRL")
+    cbfylrl = Column(Float, name="CBFYLRL")
+    yylrl = Column(Float, name="YYLRL")
+    zyywcbl = Column(Float, name="ZYYWCBL")
+    xsjll = Column(Float, name="XSJLL")
+    jzcsyl = Column(Float, name="JZCSYL")
+    gbbcl = Column(Float, name="GBBCL")
+    jzcbcl = Column(Float, name="JZCBCL")
+    zcbcl = Column(Float, name="ZCBCL")
+    xsmll = Column(Float, name="XSMLL")
+    sxfybz = Column(Float, name="SXFYBZ")
+    fzybz = Column(Float, name="FZYBZ")
+    zylrbz = Column(Float, name="ZYLRBZ")
+
+
+class FinancialCZNL(Base):
+    __tablename__ = "tb_stock_financial_cznl"
+
+    code = Column(String, name="CODE", primary_key=True)
+    date = Column(Date, name="DATE", primary_key=True)
+    period_type = Column(String, name="PERIOD_TYPE", primary_key=True)
+    zyywsrzzl = Column(Float, name="ZYYWSRZZL")
+    jlrzzl = Column(Float, name="JLRZZL")
+    jzczzl = Column(Float, name="JZCZZL")
+    zzczzl = Column(Float, name="ZZCZZL")
+
+
+class FinancialCHNL(Base):
+    __tablename__ = "tb_stock_financial_chnl"
+
+    code = Column(String, name="CODE", primary_key=True)
+    date = Column(Date, name="DATE", primary_key=True)
+    period_type = Column(String, name="PERIOD_TYPE", primary_key=True)
+    ldbl = Column(Float, name="LDBL")
+    sdbl = Column(Float, name="SDBL")
+    xjbl = Column(Float, name="XJBL")
+    lxzfbs = Column(Float, name="LXZFBS")
+    zcfzl = Column(Float, name="ZCFZL")
+    cqzwyyyzjbl = Column(Float, name="CQZWYYYZJBL")
+    gdqybl = Column(Float, name="GDQYBL")
+    cqfzbl = Column(Float, name="CQFZBL")
+    gdqyygdzcbl = Column(Float, name="GDQYYGDZCBL")
+    fzysyzqybl = Column(Float, name="FZYSYZQYBL")
+    cqzcycqzjbl = Column(Float, name="CQZCYCQZJBL")
+    zbhbl = Column(Float, name="ZBHBL")
+    gdzcjzl = Column(Float, name="GDZCJZL")
+    zbgdhbl = Column(Float, name="ZBGDHBL")
+    cqbl = Column(Float, name="CQBL")
+    qsjzbl = Column(Float, name="QSJZBL")
+    gdzcbz = Column(Float, name="GDZCBZ")

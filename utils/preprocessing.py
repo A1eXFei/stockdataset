@@ -36,6 +36,7 @@ class Preprocessing:
             return self._df, None
 
         label_columns = []
+        keep_columns = pd.DataFrame()
         # 1. 删除action为drop的列
         # 2. 保护标签列
         # 3. 处理日期类型的列
@@ -52,8 +53,13 @@ class Preprocessing:
                 label_df["LABEL_" + col.name] = self._df.pop(col.name)
                 label_columns.append(label_df)
 
+            if "keep" in col.action:
+                # keep_column = pd.DataFrame()
+                keep_columns[col.name] = self._df.pop(col.name)
+                # keep_columns.append(keep_column)
+
             if "feature" in col.attr:
-                if col.dtype == "date":
+                if col.dtype == "date" and col.action != "keep":
                     self._date_columns.append(col)
                 elif col.dtype == "numeric":
                     if col.action == "normalization":
@@ -74,6 +80,7 @@ class Preprocessing:
         # print(self._df.head())
 
         label_columns.append(self._df)
+        label_columns.append(keep_columns)
         return pd.concat(label_columns, axis=1), {"columns": self._column_seeds}
 
     def _date_feature(self, date_format="%Y-%m-%d"):

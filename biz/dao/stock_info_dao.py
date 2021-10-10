@@ -2,7 +2,7 @@
 import pandas as pd
 import logging
 import sqlalchemy
-from biz.entity.tables import Stock
+from biz.entity.tables import StockInfo
 from sqlalchemy.orm import sessionmaker
 from utils import database as dbu
 from utils.crawler import crawl_company_info
@@ -18,7 +18,7 @@ class StockBasicInfoDaoImpl:
     def get_stock_codes(self):
         codes = []
         sess = sessionmaker(bind=dbu.get_engine())()
-        for stock in sess.query(Stock).order_by(Stock.code):
+        for stock in sess.query(StockInfo).order_by(StockInfo.code):
             codes.append((stock.code, stock.last_update_date))
         self.logger.debug("列表长度:" + str(len(codes)))
         return codes
@@ -41,10 +41,10 @@ class StockBasicInfoDaoImpl:
             code = row["gsdm"]
             name = row["gsjc"]
             first_date_to_market = row["ssrq"]
-            stock = Stock(code=code,
-                          name=name,
-                          last_update_date=DEFAULT_LAST_UPDATE_DATE,
-                          first_date_to_market=first_date_to_market)
+            stock = StockInfo(code=code,
+                              name=name,
+                              last_update_date=DEFAULT_LAST_UPDATE_DATE,
+                              first_date_to_market=first_date_to_market)
             stock_list.append(stock)
 
         self.logger.info("读取深交所文件...")
@@ -57,10 +57,10 @@ class StockBasicInfoDaoImpl:
             code = str(row["agdm"]).zfill(6)
             name = row["agjc"]
             first_date_to_market = row["agssrq"]
-            stock = Stock(code=code,
-                          name=name,
-                          last_update_date=DEFAULT_LAST_UPDATE_DATE,
-                          first_date_to_market=first_date_to_market)
+            stock = StockInfo(code=code,
+                              name=name,
+                              last_update_date=DEFAULT_LAST_UPDATE_DATE,
+                              first_date_to_market=first_date_to_market)
             stock_list.append(stock)
 
         self.logger.info("股票的总数为：" + str(len(stock_list)))
@@ -68,7 +68,7 @@ class StockBasicInfoDaoImpl:
         for each in stock_list:
             self.logger.debug("处理股票代码：" + each.code)
             try:
-                _ = sess.query(Stock).filter_by(code=each.code).one()
+                _ = sess.query(StockInfo).filter_by(code=each.code).one()
                 self.logger.debug("股票代码" + each.code + "已存在")
                 pass
             except sqlalchemy.orm.exc.NoResultFound as _:
@@ -85,7 +85,7 @@ class StockBasicInfoDaoImpl:
         try:
             self.logger.info("更新股票代码: " + code)
             sess = sessionmaker(bind=dbu.get_engine())()
-            stock = sess.query(Stock).filter_by(code=code).one()
+            stock = sess.query(StockInfo).filter_by(code=code).one()
             data = crawl_company_info(code)
             stock.type = data["type"]
             stock.region = data["region"]
