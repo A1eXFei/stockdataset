@@ -9,7 +9,7 @@ logger = logging.getLogger("appLogger")
 
 
 def load_weekly_data():
-    yaml_file = open("../config/app.yaml", 'r', encoding='utf-8')
+    yaml_file = open("./config/app.yaml", 'r', encoding='utf-8')
     yaml_config = yaml.load(yaml_file.read())
     sse_file_path = yaml_config["app"]["weekly"]["sse_file_path"]
     szse_file_path = yaml_config["app"]["weekly"]["szse_file_path"]
