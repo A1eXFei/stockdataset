@@ -2,9 +2,9 @@ app:
   preprocessing:
     input_dir: H:\dataset
     input_file_pattern: full
-    output_dir: H:\preprocessing
+    output_dir: D:\preprocessing
     output_file_prefix: preprocessing_
-    keep_header: False
+    keep_header: True
     preprocess_config: ./config/full_data_preprocessing_config.yaml
     generate_seed: True
     output_seed_file_prefix: seed_

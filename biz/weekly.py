@@ -51,7 +51,3 @@ def preprocessing(app_config):
                             yaml.dump(seeds, sf)
 
     logger.info("预处理完成")
-
-
-if __name__ == "__main__":
-    load_weekly_data()

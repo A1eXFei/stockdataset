@@ -5,12 +5,12 @@ columns:
   - column:
       name: CODE
       dtype: string
-      action: drop
+      action: keep
   - column:
       name: DATE
       dtype: date
       attr: [feature]
-      action: normalization
+      action: keep
   - column:
       name: TCLOSE
       dtype: numeric

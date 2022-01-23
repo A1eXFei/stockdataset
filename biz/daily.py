@@ -30,7 +30,7 @@ def create_process(tech_config, code, start_date, end_date):
 
     df = sbdd.validate_last_record(code, df)
 
-    if df.shape[0] == 0:
+    if df is None or df.shape[0] == 0:
         logger.warning("股票代码" + code + "没有有效数据...")
         return
 

@@ -1,6 +1,6 @@
 CREATE TABLE `stockdataset`.`tb_stock_financial_zycwzb` (
   `CODE` VARCHAR(10) NOT NULL,
-  `DATE` DATE NULL,
+  `DATE` DATE NOT NULL,
   `JBMGSY_Y` DOUBLE NULL COMMENT '基本每股收益(元)',
   `MGJZC_Y` DOUBLE NULL COMMENT '每股净资产(元)',
   `MGJYHDCSDXJLLJE_Y` DOUBLE NULL COMMENT '每股经营活动产生的现金流量净额(元)',

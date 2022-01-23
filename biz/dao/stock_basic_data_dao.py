@@ -9,7 +9,7 @@ import numpy as np
 from const import *
 from utils import database as dbu
 from utils.app import code_to_symbol
-from biz.entity.tables import StockInfo, DailyBasicData
+from biz.entity.tables import StockInfo, DailyBasicData, DailyTechData
 # from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 
@@ -31,12 +31,34 @@ class StockBasicDailyDataDaoImpl:
             # db_sess = self.sess_factory()
             # db_sess.begin()
             try:
-                _ = db_sess.query(DailyBasicData).filter_by(code=code, date=df_min_date).one()
+                last_close_from_163 = df["tclose"].values[-1]
+
+                # 去除最小日期的数据，因为上次执行时理论上应该已经存在数据库里了
+                data = db_sess.query(DailyBasicData).filter_by(code=code, date=df_min_date).one()
                 self.logger.debug("股票代码" + code + "日期" + df_min_date + "的行情数据在数据库已存在")
                 df.drop(labels=df_min_date, axis=0, inplace=True)
                 self.logger.debug("从163数据里删除股票代码" + code + "日期" + df_min_date + "的行情数据")
+
+                # 检查
+                last_close_from_db = data.t_close
+
+                if last_close_from_db != last_close_from_163:
+                    self.logger.warning("股票代码" + code + "发生复权，数据库记录收盘价" + str(last_close_from_db) +
+                                        ", 163获得收盘价" + str(last_close_from_163))
+                    raise DataOccurFQException("FQ Detected")
             except sqlalchemy.orm.exc.NoResultFound as _:
                 self.logger.debug("股票代码" + code + "日期" + df_min_date + "的行情数据在数据库不存在")
+            except DataOccurFQException as _:
+                # 处理复权
+                # 1. 删除基本数据
+                # 2. 删除技术指标数据
+                # 3. 设置为last_update_date为1991-01-01
+                basic_data = db_sess.query(DailyBasicData).filter_by(code=code)
+                db_sess.delete(basic_data)
+                tech_data = db_sess.query(DailyTechData).filter_by(code=code)
+                db_sess.delete(tech_data)
+                db_sess.query(StockInfo).filter_by(code=code).update({"last_update_date": "1991-01-01"})
+                db_sess.commit()
             finally:
                 # db_sess.close()
                 return df
@@ -127,5 +149,10 @@ class StockBasicDailyDataDaoImpl:
 
 
 class NoDataReceiveException(RuntimeError):
+    def __init__(self, arg):
+        self.args = arg
+
+
+class DataOccurFQException(RuntimeError):
     def __init__(self, arg):
         self.args = arg
