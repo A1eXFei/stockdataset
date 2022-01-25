@@ -7,6 +7,7 @@ from utils import database as dbu
 from sqlalchemy.orm import Session
 from biz.entity.tables import StockInfo
 
+
 def test_stock_basic_info():
     session = StockBasicInfoDaoImpl()
     session.add("../files/sse.xls", "../files/szse.xlsx")

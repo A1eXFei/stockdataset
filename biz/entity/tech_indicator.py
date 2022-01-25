@@ -150,6 +150,9 @@ class TechIndicatorCalculator:
             basic_data = self._get_basic_data(time_period + 1)
 
             if basic_data.shape[0] >= time_period + 1:
+                if (basic_data['TOPEN'][1:] - basic_data['LOW'][1:]).sum() == 0:
+                    raise ZeroDivisionError()
+
                 ar = round((basic_data['HIGH'][1:] - basic_data['TOPEN'][1:]).sum()
                            / (basic_data['TOPEN'][1:] - basic_data['LOW'][1:]).sum() * 100, 3)
                 # basic_data['LCLOSE'] = basic_data['TCLOSE'].shift(1)
@@ -372,15 +375,11 @@ class TechIndicatorCalculator:
             basic_data = self._get_basic_data(max_time_period * 3)
 
             if basic_data.shape[0] >= max_time_period * 3:
-                basic_data["EMA12"] = pd.DataFrame.ewm(basic_data['TCLOSE'], span=time_period1).mean()
-                basic_data["EMA26"] = pd.DataFrame.ewm(basic_data['TCLOSE'], span=time_period2).mean()
-                basic_data["DIF"] = basic_data["EMA12"] - basic_data["EMA26"]
-                basic_data["DEA"] = pd.DataFrame.ewm(basic_data['DIF'], span=time_period3).mean()
-                basic_data["MACD"] = (basic_data["DIF"] - basic_data["DEA"]) * 2
+                dif, dea, signal = ta.MACD(basic_data['TCLOSE'].values, fastperiod=12, slowperiod=26, signalperiod=9)
 
-                dif = round(basic_data["DIF"].values[-1], 3)
-                dea = round(basic_data["DEA"].values[-1], 3)
-                macd = round(basic_data["MACD"].values[-1], 3)
+                dif = round(dif[-1], 3)
+                dea = round(dea[-1], 3)
+                macd = round(signal[-1] * 2, 3)
 
                 if np.isnan(dif) or np.isinf(dif) or np.isneginf(dif):
                     dif = 0.0
