@@ -1,8 +1,7 @@
 # -*- coding: UTF-8 -*-
-import logging
 import os
 import yaml
-from biz.dao.stock_info_dao import *
+from v1.biz.dao.stock_info_dao import *
 from utils.preprocessing import Preprocessing
 
 logger = logging.getLogger("appLogger")

@@ -1,0 +1,18 @@
+ALTER TABLE `stockdataset`.`tb_stock_info`
+CHANGE COLUMN `ENGLISH_NAME` `ENGLISH_NAME` VARCHAR(100) NULL DEFAULT NULL ;
+
+ALTER TABLE `stockdataset`.`tb_stock_financial_zycwzb`
+CHANGE COLUMN `PERIOD_TYPE` `PERIOD_PERIOD` VARCHAR(10) NOT NULL ;
+
+ALTER TABLE `stockdataset`.`tb_stock_financial_yynl`
+CHANGE COLUMN `PERIOD_TYPE` `PERIOD_PERIOD` VARCHAR(10) NOT NULL ;
+
+ALTER TABLE `stockdataset`.`tb_stock_financial_ylnl`
+CHANGE COLUMN `PERIOD_TYPE` `PERIOD_PERIOD` VARCHAR(10) NOT NULL ;
+
+
+ALTER TABLE `stockdataset`.`tb_stock_financial_cznl`
+CHANGE COLUMN `PERIOD_TYPE` `PERIOD_PERIOD` VARCHAR(10) NOT NULL ;
+
+ALTER TABLE `stockdataset`.`tb_stock_financial_chnl`
+CHANGE COLUMN `PERIOD_TYPE` `PERIOD_PERIOD` VARCHAR(10) NOT NULL ;

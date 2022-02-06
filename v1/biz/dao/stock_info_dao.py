@@ -2,7 +2,7 @@
 import pandas as pd
 import logging
 import sqlalchemy
-from biz.entity.tables import StockInfo
+from v1.biz.entity.tables import StockInfo
 from sqlalchemy.orm import sessionmaker
 from utils import database as dbu
 from utils.crawler import crawl_company_info

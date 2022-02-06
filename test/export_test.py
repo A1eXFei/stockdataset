@@ -1,6 +1,6 @@
 import yaml
 from utils.app import config_logger
-from biz.export import Exporter
+from v1.biz.export import Exporter
 
 config_logger()
 app_param_file = open("../config/app.yaml", "r", encoding="utf-8")

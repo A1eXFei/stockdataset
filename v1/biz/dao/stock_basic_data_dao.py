@@ -9,7 +9,7 @@ import numpy as np
 from const import *
 from utils import database as dbu
 from utils.app import code_to_symbol
-from biz.entity.tables import StockInfo, DailyBasicData, DailyTechData
+from v1.biz.entity.tables import StockInfo, DailyBasicData, DailyTechData
 # from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 

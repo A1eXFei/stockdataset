@@ -5,6 +5,8 @@ import yaml
 import mysql.connector
 import pandas as pd
 from sqlalchemy import create_engine
+from sqlalchemy.pool import NullPool
+
 
 current_path = os.path.abspath(__file__)
 db_config_file_path = os.path.join(os.path.abspath(os.path.dirname(current_path) + os.path.sep + "../config"),
@@ -25,13 +27,12 @@ logger = logging.getLogger("appLogger")
 
 
 def get_engine():
-    conn = "mysql://" + config["user"] + \
+    con_str = "mysql://" + config["user"] + \
            ":" + config["password"] + \
            "@" + config["host"] + \
            "/" + config["database"] + \
            "?charset=" + config["charset"]
-    # logger.debug(conn)
-    return create_engine(conn)
+    return create_engine(con_str, pool_pre_ping=True)
 
 
 def get_conn():
@@ -39,6 +40,7 @@ def get_conn():
 
 
 def get_pd_data(sql):
+    # 必须使用sqlalchemy创建的engine，使用mysql的连接会导致内存无法回收
     # db_conn = mysql.connector.connect(**config)
     data = pd.read_sql_query(sql=sql, con=get_engine())
     # db_conn.close()

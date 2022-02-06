@@ -2,9 +2,9 @@
 import multiprocessing as mp
 import logging
 from datetime import *
-from biz.dao.stock_info_dao import StockBasicInfoDaoImpl
-from biz.dao.stock_basic_data_dao import StockBasicDailyDataDaoImpl
-from biz.dao.stock_tech_indicator_dao import StockTechDailyDataDaoImpl
+from v1.biz.dao.stock_info_dao import StockBasicInfoDaoImpl
+from v1.biz.dao.stock_basic_data_dao import StockBasicDailyDataDaoImpl
+from v1.biz.dao.stock_tech_indicator_dao import StockTechDailyDataDaoImpl
 from rpt.batch import BatchReport
 from utils import date as du
 from utils import app

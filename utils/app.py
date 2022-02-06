@@ -25,3 +25,8 @@ def code_to_symbol(_code):
         return ''
     else:
         return '0%s' % _code if _code[:1] in ['5', '6', '9'] else '1%s' % _code
+
+
+def merge_dict(dict1, dict2):
+    dict1.update(dict2)
+    return dict1

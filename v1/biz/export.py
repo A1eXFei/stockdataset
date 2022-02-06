@@ -3,7 +3,7 @@ import os
 import logging
 from tqdm import tqdm
 from utils.database import get_pd_data
-from biz.dao.stock_info_dao import StockBasicInfoDaoImpl
+from v1.biz.dao.stock_info_dao import StockBasicInfoDaoImpl
 
 
 class Exporter:

@@ -1,10 +1,7 @@
 # -*- coding: UTF-8 -*-
 import yaml
-import sys
 import logging
 from biz.daily import load_daily_data
-from biz.weekly import preprocessing, load_weekly_data
-from biz.export import Exporter
 from utils import app
 
 if __name__ == '__main__':
