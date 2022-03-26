@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 import multiprocessing as mp
 import logging
+import os
 from tqdm import tqdm
 from datetime import *
 from rpt.batch import BatchReport
@@ -10,6 +11,7 @@ from utils import database as dbu
 from v2.biz.data.info import StockInfo
 from v2.biz.data.market import StockMarketData
 from v2.biz.data.indicator import StockIndicatorData
+from v2.biz.data.financial import StockFinancialData, StockFinancialReport
 
 g_logger = logging.getLogger("appLogger")
 
@@ -81,7 +83,7 @@ def create_weekly_process(code):
     si.update(code)
 
 
-def load_weekly_data(task_config, num_process=10):
+def load_weekly_data(task_config):
     sse_file_path = task_config["sse_file_path"]
     szse_file_path = task_config["szse_file_path"]
 
@@ -91,9 +93,85 @@ def load_weekly_data(task_config, num_process=10):
 
     stocks = si.get_stock_codes()
 
-    pool = mp.Pool(processes=num_process)
+    pool = mp.Pool(processes=task_config["num_process"])
     for code, _ in stocks:
+        # TODO: 控制stocks列表限制测试数量
         pool.apply_async(create_weekly_process, (code,))
     pool.close()
     pool.join()
     g_logger.info("公司其他信息更新完成")
+
+
+def create_quarterly_process(code, save_to_file, save_dir):
+    p_logger = logging.getLogger("appLogger")
+    if not bool(p_logger.handlers):
+        app.config_logger()
+
+    if save_to_file is True:
+        if save_dir is not None:
+            if not os.path.exists(save_dir):
+                os.mkdir(save_dir)
+
+    engine = dbu.get_engine()
+    sfd = StockFinancialData(engine)
+
+    p_logger.info(f"开始获取{code}的财务数据")
+    sfd.fetch_and_save_data(code, report_period="season", save_to_file=save_to_file, save_dir=save_dir)
+    p_logger.info(f"{code}的财务数据已保存")
+
+
+def load_quarterly_data(task_config):
+    g_logger.info("删除所有现有主要财务数据...")
+    sfd = StockFinancialData(dbu.get_engine())
+    sfd.truncate_all()
+
+    g_logger.info("删除完成")
+
+    si = StockInfo(dbu.get_engine())
+    stocks = si.get_stock_codes()
+
+    pool = mp.Pool(processes=task_config["num_process"])
+    for code, _ in stocks:
+        # TODO: 控制stocks列表限制测试数量
+        pool.apply_async(create_quarterly_process, (code, task_config["save_to_file"], task_config["save_dir"]))
+    pool.close()
+    pool.join()
+    g_logger.info("主要财务数据更新完成")
+
+
+def create_yearly_process(code, save_to_file, save_dir):
+    p_logger = logging.getLogger("appLogger")
+    if not bool(p_logger.handlers):
+        app.config_logger()
+
+    if save_to_file is True:
+        if save_dir is not None:
+            if not os.path.exists(save_dir):
+                os.mkdir(save_dir)
+
+    engine = dbu.get_engine()
+    sfd = StockFinancialReport(engine)
+
+    p_logger.info(f"开始获取{code}的财务报表")
+    sfd.fetch_and_save_data(code, report_period="year", save_to_file=save_to_file, save_dir=save_dir)
+    p_logger.info(f"{code}的财务报表已保存")
+
+
+def load_yearly_data(task_config):
+    g_logger.info("删除所有现有财务报表数据...")
+    sfd = StockFinancialReport(dbu.get_engine())
+    sfd.truncate_all()
+
+    g_logger.info("删除完成")
+
+    si = StockInfo(dbu.get_engine())
+    stocks = si.get_stock_codes()
+
+    pool = mp.Pool(processes=task_config["num_process"])
+    for code, _ in stocks[:10]:
+        # TODO: 控制stocks列表限制测试数量
+        pool.apply_async(create_yearly_process, (code, task_config["save_to_file"], task_config["save_dir"]))
+    pool.close()
+    pool.join()
+    g_logger.info("财务报表数据更新完成")
+

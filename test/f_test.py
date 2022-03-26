@@ -1,5 +1,6 @@
-from v2.biz.data.financial import StockFinancialData
+from v2.biz.data.financial import *
 import utils.database as dbu
 
-s = StockFinancialData(dbu.get_engine())
+s = StockFinancialReport(dbu.get_engine())
+s.truncate_all()
 s.fetch_and_save_data("000001")

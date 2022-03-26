@@ -117,7 +117,55 @@ class Crawler163:
             df["PERIOD_TYPE"] = report_period
             df.drop([0, df.shape[0]-1], inplace=True)
             # df.set_index(["CODE", "报告日期"], inplace=True)
-            print(df)
+            # print(df)
+            temp.close()
+            return df
+        else:
+            return None
+
+    def crawl_financial_report(self, code, report_period="report", report_type="zcfzb"):
+        """
+        :param code: 股票代码
+        :param report_period:
+        报告周期： 1. report:按报告期 2. year 按年度
+        :param report_type:
+        财务指标类型：1. zcfzb：资产负债表 2. lrb 利润表 3. xjllb 现金流量表
+        :return: 从163下载各个类型的全量报表
+        """
+        # "http://quotes.money.163.com/service/zycwzb_000001.html?type=season"
+        # "http://quotes.money.163.com/service/zycwzb_000001.html?type=report"
+        if report_period not in ["report", "year"]:
+            self.logger.error("主要财务报表周期类型错误，支持report, year")
+            raise ValueError("主要财务报表周期类型错误，支持report, year")
+
+        if report_type not in ["zcfzb", "lrb", "xjllb"]:
+            self.logger.error("主要财务报表类型错误，支持zcfzb, lrb, xjllb")
+            raise ValueError("主要财务报表类型错误，支持zcfzb, lrb, xjllb")
+
+        if report_period == "report":
+            url = "http://quotes.money.163.com/service/" + report_type + "_" + code + ".html"
+        else:
+            url = "http://quotes.money.163.com/service/" + report_type +  "_" + code + ".html?type=" + report_period
+
+        # print(url)
+        self.logger.debug(url)
+        r = requests.get(url, {"type": report_type})
+        if r.status_code == 200:
+            temp = TemporaryFile()
+            temp.write(bytes(r.text, encoding="utf-8"))
+            temp.seek(0)
+            df = pd.read_csv(temp)
+            df = df.transpose()
+            df.reset_index(inplace=True)
+            df.columns = df.iloc[0]
+            df = self._rename_cols(df, report_type)
+            df.replace("--", np.NaN, inplace=True)
+            df.replace(" --", np.NaN, inplace=True)
+            df["CODE"] = code
+            df["PERIOD_TYPE"] = report_period
+            df.drop([0, df.shape[0]-1], inplace=True)
+            # df.set_index(["CODE", "报告日期"], inplace=True)
+            # print(df)
             temp.close()
             return df
         else:
@@ -127,7 +175,7 @@ class Crawler163:
         def _replace_name(names, mapping):
             new_name = []
             for name in names:
-                new_name.append(mapping[name])
+                new_name.append(mapping[name.strip()])
             return new_name
 
         columns = df.columns
@@ -141,6 +189,12 @@ class Crawler163:
             columns = _replace_name(columns, CZNL_COL_MAPPING)
         elif report_type == "yynl":
             columns = _replace_name(columns, YYNL_COL_MAPPING)
+        elif report_type == "zcfzb":
+            columns = _replace_name(columns, ZCFZB_COL_MAPPING)
+        elif report_type == "lrb":
+            columns = _replace_name(columns, LRB_COL_MAPPING)
+        elif report_type == "xjllb":
+            columns = _replace_name(columns, XJLLB_COL_MAPPING)
 
         df.columns = columns
         return df

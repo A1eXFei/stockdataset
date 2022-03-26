@@ -17,5 +17,14 @@ app:
   daily:
     num_process: 5
   weekly:
+    num_process: 5
     sse_file_path: ./files/sse.xls
     szse_file_path: ./files/szse.xlsx
+  quarterly:
+    num_process: 5
+    save_to_file: True
+    save_dir: ./financial
+  yearly:
+    num_process: 5
+    save_to_file: True
+    save_dir: ./financial
