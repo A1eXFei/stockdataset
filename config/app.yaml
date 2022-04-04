@@ -16,6 +16,7 @@ app:
     keep_header: True
   daily:
     num_process: 5
+    tech_config: ./config/tech_indicator_params.yaml
   weekly:
     num_process: 5
     sse_file_path: ./files/sse.xls

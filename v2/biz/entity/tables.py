@@ -471,3 +471,29 @@ class TBFinancialXJLLB(Base):
     xjjdjwdqcye_wy = Column(Float, name="XJJDJWDQCYE_WY")
     xjjxjdjwdjzje_wy = Column(Float, name="XJJXJDJWDJZJE_WY")
 
+
+class TBDailyCashFlow(Base):
+    __tablename__ = "tb_stock_cashflow_daily"
+
+    code = Column(String, name="CODE", primary_key=True)
+    date = Column(Date, name="DATE", primary_key=True)
+    trade = Column(Float, name="TRADE")
+    change_ratio = Column(Float, name="CHANGERATIO")
+    turnover = Column(Float, name="TURNOVER")
+    net_amount = Column(Float, name="NETAMOUNT")
+    ratio_amount = Column(Float, name="RATIOAMOUNT")
+
+    r0_in = Column(Float, name="R0_IN")
+    r1_in = Column(Float, name="R1_IN")
+    r2_in = Column(Float, name="R2_IN")
+    r3_in = Column(Float, name="R3_IN")
+
+    r0_out = Column(Float, name="R0_OUT")
+    r1_out = Column(Float, name="R1_OUT")
+    r2_out = Column(Float, name="R2_OUT")
+    r3_out = Column(Float, name="R3_OUT")
+
+    r0_net = Column(Float, name="R0_NET")
+    r1_net = Column(Float, name="R1_NET")
+    r2_net = Column(Float, name="R2_NET")
+    r3_net = Column(Float, name="R3_NET")

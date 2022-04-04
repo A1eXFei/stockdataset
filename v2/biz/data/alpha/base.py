@@ -17,10 +17,10 @@ class BaseAlpha:
         self.logger = logging.getLogger("appLogger")
 
     def get_basic_data(self, n_days):
-        sql = "SELECT * FROM tb_stock_basic_daily WHERE 1=1" \
-              " AND code ='" + self.code + "' " + \
-              " AND date <= '" + self.date + "' " + \
-              " ORDER BY date DESC LIMIT 0, " + str(n_days)
+        sql = f"SELECT * FROM tb_stock_basic_daily WHERE 1=1" \
+              f" AND code = '{self.code}'" + \
+              f" AND date <= '{self.date}'" + \
+              f" ORDER BY date DESC LIMIT 0, {n_days}"
         df = pd.read_sql(sql=sql, con=self.engine.connect()).sort_index(ascending=False)
         return df
 

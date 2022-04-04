@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 import requests
+import time
+import urllib3
 import pandas as pd
 import numpy as np
 import logging
@@ -8,10 +10,15 @@ from lxml import etree
 from utils.c import *
 from utils.app import code_to_symbol
 from tempfile import TemporaryFile
+from utils.execption import *
+
+
+# from utils import app
 
 
 class Crawler163:
     def __init__(self):
+        # app.config_logger()
         self.logger = logging.getLogger("appLogger")
 
     def get_163_urls(self, code):
@@ -42,6 +49,64 @@ class Crawler163:
             return etree.HTML(r.text)
         else:
             return None
+
+    def crawl_daily_market_data(self, code, start_date, end_date, retry_count=10, pause=0.001):
+        symbol = code_to_symbol(code)
+        url_base = QUOTES_MONEY_163_URL
+        url_par_code = "code=" + symbol + "&"
+        url_par_start = "start=" + start_date.replace("-", "") + "&"
+        url_par_end = "end=" + end_date.replace("-", "") + "&"
+        url_par_field = "fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP"
+
+        url = url_base + url_par_code + url_par_start + url_par_end + url_par_field
+        self.logger.debug(url)
+
+        cols = ['date',
+                'code',
+                'name',
+                'tclose',
+                'high',
+                'low',
+                'topen',
+                'lclose',
+                'chg',
+                'pchg',
+                'turnover',
+                'voturnover',
+                'vaturnover',
+                'tcap',
+                'mcap']
+
+        for _ in range(retry_count):
+            time.sleep(pause)
+            try:
+                http = urllib3.PoolManager()
+                response = str(http.request(method="GET", url=url).data, encoding="gbk")
+                lines = response.split("\n")[1:-1]
+                if len(lines) < 1:
+                    raise NoDataReceiveException("No data received")
+            except NoDataReceiveException as _:
+                self.logger.error("没有收到数据")
+                pass
+            except Exception as ex:
+                self.logger.error(ex)
+                self.logger.error(traceback.format_exc())
+                pass
+            else:
+                data = []
+                for each in lines:
+                    data.append(each.split(","))
+                df = pd.DataFrame(data, columns=cols)
+                df.replace(to_replace="None", value=np.NaN, inplace=True)
+                df.drop(["name"], axis=1, inplace=True)
+                df.dropna(axis=0, inplace=True)
+                for col in df.columns.values.tolist()[3:]:
+                    df[col] = df[col].astype(float)
+                df["code"] = df["code"].str.lstrip("'")
+                df = df.set_index(['date'])
+                df = df.sort_index(ascending=False)
+                return df
+        return None
 
     def crawl_company_info(self, code):
         try:
@@ -115,7 +180,7 @@ class Crawler163:
             df.replace("--", np.NaN, inplace=True)
             df["CODE"] = code
             df["PERIOD_TYPE"] = report_period
-            df.drop([0, df.shape[0]-1], inplace=True)
+            df.drop([0, df.shape[0] - 1], inplace=True)
             # df.set_index(["CODE", "报告日期"], inplace=True)
             # print(df)
             temp.close()
@@ -145,7 +210,7 @@ class Crawler163:
         if report_period == "report":
             url = "http://quotes.money.163.com/service/" + report_type + "_" + code + ".html"
         else:
-            url = "http://quotes.money.163.com/service/" + report_type +  "_" + code + ".html?type=" + report_period
+            url = "http://quotes.money.163.com/service/" + report_type + "_" + code + ".html?type=" + report_period
 
         # print(url)
         self.logger.debug(url)
@@ -163,7 +228,7 @@ class Crawler163:
             df.replace(" --", np.NaN, inplace=True)
             df["CODE"] = code
             df["PERIOD_TYPE"] = report_period
-            df.drop([0, df.shape[0]-1], inplace=True)
+            df.drop([0, df.shape[0] - 1], inplace=True)
             # df.set_index(["CODE", "报告日期"], inplace=True)
             # print(df)
             temp.close()
@@ -198,3 +263,66 @@ class Crawler163:
 
         df.columns = columns
         return df
+
+
+class CrawlerSina:
+    def __init__(self):
+        # app.config_logger()
+        self.logger = logging.getLogger("appLogger")
+
+    def get_money_flow(self, code, asc=1, num=50):
+        """
+        :param code: 股票的代码
+        :param asc: 参数：1代表升序，0代表降序
+        :param num: 代表每次获取的数量
+        :return: pandas dataframe, 列为：
+                'code'          股票代码
+                'date'          日期
+                'trade'         收盘价
+                'changeratio'   涨跌幅 无%
+                'turnover'      换手率 有%
+                'netamount'     净流入（万元）
+                'ratioamount'   净流入率 无%
+                'r0_in'         超大单流入（万元）
+                'r1_in'         大单流入（万元）
+                'r2_in'         小单流入（万元）
+                'r3_in'         散单流入（万元）
+                'r0_net'        超大单净流入（万元）
+                'r1_net'        大单净流入（万元）
+                'r2_net'        小单净流入（万元）
+                'r3_net'        散单净流入（万元）
+                'r0_out'        超大单净流出（万元）
+                'r1_out'        大单净流出（万元）
+                'r2_out'        小单净流出（万元）
+                'r3_out'        散单净流出（万元）
+        """
+
+        url = FINANCE_SINA_URL + "/" + FINANCE_SINA_MONEY_FLOW
+        params = {"page": 1,
+                  "num": num,
+                  "sort": "opendate",
+                  "asc": asc,
+                  "daima": code_to_symbol(code, "sina")}
+
+        r = requests.get(url, params=params)
+        if r.status_code == 200:
+            df = pd.read_json(r.text)
+            df.rename({"r1": "r1_in", "r2": "r2_in", "r3": "r3_in", "r0": "r0_in", "opendate": "date"},
+                      inplace=True, axis=1)
+
+            # 删除为0的数据
+            df = df[df["trade"] != 0]
+            df["code"] = code
+            df["r0_out"] = df["r0_in"] - df["r0_net"]
+            df["r1_out"] = df["r1_in"] - df["r1_net"]
+            df["r2_out"] = df["r2_in"] - df["r2_net"]
+            df["r3_out"] = df["r3_in"] - df["r3_net"]
+            df["turnover"] = df["turnover"] % 100
+            start_date = df["date"].min()
+            end_date = df["date"].max()
+
+            self.logger.info(f"股票代码:{code}的数据以获取完毕，开始日期{start_date}，结束日期{end_date}")
+            return df
+        else:
+            self.logger.error("无法从sina获得数据！！！")
+            raise RuntimeError("Failed to get response from sina")

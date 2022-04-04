@@ -9,7 +9,8 @@ from v2.biz.data.base import BaseInfo
 from utils import database as dbu
 from v2.biz.entity.tables import TBStockInfo, TBDailyBasicData, TBDailyTechData
 from sqlalchemy.orm import Session
-from v2.biz.data.execption import *
+from utils.execption import *
+from utils.crawler import Crawler163
 from utils.app import code_to_symbol
 from utils.c import *
 
@@ -72,7 +73,12 @@ class StockMarketData(BaseInfo):
                 self.logger.error(ex)
                 db_sess.rollback()
 
-    def get_data_from_163(self, code, start_date, end_date, retry_count=10, pause=0.001):
+    def get_data_from_163(self, code, start_date, end_date):
+        self.logger.debug("进入get_data_from_163函数")
+        crawler = Crawler163()
+        return crawler.crawl_daily_market_data(code, start_date, end_date)
+
+        '''
         symbol = code_to_symbol(code)
         url_base = QUOTES_MONEY_163_URL
         url_par_code = "code=" + symbol + "&"
@@ -129,3 +135,4 @@ class StockMarketData(BaseInfo):
                 df = df.sort_index(ascending=False)
                 return df
         return None
+        '''

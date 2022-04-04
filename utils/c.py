@@ -3,6 +3,9 @@ DEFAULT_LAST_UPDATE_DATE = '1991-01-01'
 MONEY_163_URL = "http://quotes.money.163.com"
 QUOTES_MONEY_163_URL = "http://quotes.money.163.com/service/chddata.html?"
 
+FINANCE_SINA_URL = "https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php"
+FINANCE_SINA_MONEY_FLOW = "MoneyFlow.ssl_qsfx_lscjfb"
+
 
 class CompanyInfoXPath:
     type = "//div[@class='col_l_01']/table[@class='table_bg001 border_box limit_sale table_details']/tr[1]/td[2]/text()"

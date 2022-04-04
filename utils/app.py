@@ -20,11 +20,14 @@ def config_logger():
     logger.addHandler(console)
 
 
-def code_to_symbol(_code):
+def code_to_symbol(_code, site="163"):
     if len(_code) != 6:
         return ''
-    else:
+
+    if site == "163":
         return '0%s' % _code if _code[:1] in ['5', '6', '9'] else '1%s' % _code
+    elif site == "sina":
+        return 'sh%s' % _code if _code[:1] in ['5', '6', '9'] else 'sz%s' % _code
 
 
 def merge_dict(dict1, dict2):

@@ -2,9 +2,11 @@
 import multiprocessing as mp
 import logging
 import os
+import yaml
 from tqdm import tqdm
 from datetime import *
 from rpt.batch import BatchReport
+from utils.c import DEFAULT_LAST_UPDATE_DATE
 from utils import date as du
 from utils import app
 from utils import database as dbu
@@ -12,6 +14,7 @@ from v2.biz.data.info import StockInfo
 from v2.biz.data.market import StockMarketData
 from v2.biz.data.indicator import StockIndicatorData
 from v2.biz.data.financial import StockFinancialData, StockFinancialReport
+from v2.biz.data.cashflow import StockCashFlowData
 
 g_logger = logging.getLogger("appLogger")
 
@@ -34,15 +37,29 @@ def create_daily_process(tech_config, code, start_date, end_date):
     df = smd.validate_last_record(code, df)
 
     if df is None or df.shape[0] == 0:
-        p_logger.warning("股票代码" + code + "没有有效数据...")
+        p_logger.warning(f"股票代码{code}没有有效数据...")
         return
 
     smd.save_data_to_database(df)
-    p_logger.info("股票代码" + code + "的行情信息已保存...")
-
     smd.update_last_update_date(code, end_date, df)
+    p_logger.info(f"股票代码{code}的行情信息已保存...")
 
-    p_logger.info("开始计算股票代码" + code + "的技术指标...")
+    ###########################################################################
+
+    p_logger.info(f"开始获取股票代码{code}的现金流数据，开始日期{start_date}...")
+    fetch_mode = "init" if start_date == DEFAULT_LAST_UPDATE_DATE else "daily"
+    scfd = StockCashFlowData(engine)
+    cash_flow_df = scfd.get_data(code, start_date, fetch_mode=fetch_mode)
+
+    if cash_flow_df is None or cash_flow_df.shape[0] == 0:
+        p_logger.warning(f"股票代码{code}没有有效的现金流数据...")
+        return
+    scfd.save_data_to_database(cash_flow_df)
+    p_logger.info(f"股票代码{code}的现金流数据已保存...")
+
+    ###########################################################################
+
+    p_logger.info(f"开始计算股票代码{code}的技术指标...")
     sid = StockIndicatorData(engine)
 
     tech_data_list = []
@@ -53,7 +70,10 @@ def create_daily_process(tech_config, code, start_date, end_date):
     p_logger.info("股票代码" + code + "的技术指标信息已保存...")
 
 
-def load_daily_data(tech_config, num_process=5):
+def load_daily_data(task_config):
+    tech_param_file = open(task_config["tech_config"], "r", encoding="utf-8")
+    tech_config = yaml.load(tech_param_file.read())
+
     now = datetime.now()
     today = du.date_to_string(now, '%Y-%m-%d')
     g_logger.info("今天是" + today)
@@ -61,7 +81,7 @@ def load_daily_data(tech_config, num_process=5):
     si = StockInfo(dbu.get_engine())
     stocks = si.get_stock_codes()
 
-    pool = mp.Pool(processes=num_process)
+    pool = mp.Pool(processes=task_config["num_process"])
 
     for code, last_update_date in stocks:
         # TODO: 控制stocks列表限制测试数量
@@ -175,3 +195,9 @@ def load_yearly_data(task_config):
     pool.join()
     g_logger.info("财务报表数据更新完成")
 
+
+def init_data(task_config):
+    load_weekly_data(task_config["weekly"])
+    load_daily_data(task_config["daily"])
+    load_quarterly_data(task_config["quarterly"])
+    load_yearly_data(task_config["yearly"])
