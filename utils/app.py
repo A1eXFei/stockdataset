@@ -1,9 +1,10 @@
 import sys
 import logging
+from typing import Dict
 from logging.handlers import TimedRotatingFileHandler
 
 
-def config_logger():
+def config_logger() -> None:
     logger = logging.getLogger("appLogger")
     logger.setLevel(logging.INFO)
 
@@ -20,7 +21,7 @@ def config_logger():
     logger.addHandler(console)
 
 
-def code_to_symbol(_code, site="163"):
+def code_to_symbol(_code: str, site: str = "163") -> str:
     if len(_code) != 6:
         return ''
 
@@ -30,6 +31,6 @@ def code_to_symbol(_code, site="163"):
         return 'sh%s' % _code if _code[:1] in ['5', '6', '9'] else 'sz%s' % _code
 
 
-def merge_dict(dict1, dict2):
+def merge_dict(dict1: Dict, dict2: Dict) -> Dict:
     dict1.update(dict2)
     return dict1

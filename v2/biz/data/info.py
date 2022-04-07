@@ -10,7 +10,7 @@ from utils.c import *
 
 
 class StockInfo(BaseInfo):
-    def get_stock_codes(self):
+    def get_stock_codes(self) -> list:
         codes = []
         with Session(self.engine) as db_sess:
             for stock in db_sess.query(TBStockInfo).order_by(TBStockInfo.code):
@@ -18,11 +18,11 @@ class StockInfo(BaseInfo):
             self.logger.debug(f"列表长度: {len(codes)}")
         return codes
 
-    def add(self, sse_file_path, szse_file_path):
-        # TODO:自动化下载
+    def __read_sse_file(self, file_path: str) -> list:
+        # TODO:上交所文件有变更
         stock_list = []
         self.logger.info("读取上交所文件...")
-        sse_df = pd.read_csv(sse_file_path,
+        sse_df = pd.read_csv(file_path,
                              delimiter="\t",
                              encoding="gbk",
                              header=0,
@@ -43,8 +43,10 @@ class StockInfo(BaseInfo):
                                 first_date_to_market=first_date_to_market)
             stock_list.append(stock)
 
+    def __read_szse_file(self, file_path: str) -> list:
+        stock_list = []
         self.logger.info("读取深交所文件...")
-        szse_df = pd.read_excel(szse_file_path,
+        szse_df = pd.read_excel(file_path,
                                 header=0,
                                 names=["bk", "gsqc", "ywmz", "zcdz", "agdm", "agjc",
                                        "agssrq", "agzgb", "agltgb", "bgdm", "bgjc",
@@ -58,6 +60,11 @@ class StockInfo(BaseInfo):
                                 last_update_date=DEFAULT_LAST_UPDATE_DATE,
                                 first_date_to_market=first_date_to_market)
             stock_list.append(stock)
+            return stock_list
+
+    def add(self, sse_file_path: str, szse_file_path: str) -> None:
+        # TODO:自动化下载
+        stock_list = self.__read_szse_file(szse_file_path) + self.__read_sse_file(sse_file_path)
 
         self.logger.info(f"股票的总数为：{len(stock_list)}")
 
@@ -80,7 +87,7 @@ class StockInfo(BaseInfo):
                     pbar.update(1)
                     pbar.set_description(f"处理股票代码{each.code}中...")
 
-    def update(self, code):
+    def update(self, code:str ) -> None:
         with Session(self.engine) as db_sess:
             try:
                 self.logger.info(f"从163开始抓取股票代码{code}的相关公司信息")

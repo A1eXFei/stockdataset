@@ -13,14 +13,15 @@ from utils.execption import *
 from utils.crawler import Crawler163
 from utils.app import code_to_symbol
 from utils.c import *
+from pandas import DataFrame
 
 
 class StockMarketData(BaseInfo):
-    def save_data_to_database(self, data):
+    def save_data_to_database(self, data: DataFrame) -> None:
         dbu.save_pd_data("tb_stock_basic_daily", data)
         self.logger.info("数据已存入库")
 
-    def validate_last_record(self, code, df):
+    def validate_last_record(self, code: str, df: DataFrame) -> DataFrame:
         df_min_date = df.index.values.min()
         with Session(self.engine) as db_sess:
             try:
@@ -73,7 +74,7 @@ class StockMarketData(BaseInfo):
                 self.logger.error(ex)
                 db_sess.rollback()
 
-    def get_data_from_163(self, code, start_date, end_date):
+    def get_data_from_163(self, code: str, start_date: str, end_date: str) -> DataFrame:
         self.logger.debug("进入get_data_from_163函数")
         crawler = Crawler163()
         return crawler.crawl_daily_market_data(code, start_date, end_date)

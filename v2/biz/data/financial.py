@@ -10,13 +10,13 @@ class StockFinancialData(BaseInfo):
         super(StockFinancialData, self).__init__(engine)
         self.report_type_list = [None, "ylnl", "chnl", "cznl", "yynl"]
 
-    def _decode_report_period(self, report_period):
+    def _decode_report_period(self, report_period: str) -> str:
         period_dict = {"report": "按报告期",
                        "season": "按单季度",
                        "year": "按年度"}
         return period_dict[report_period]
 
-    def _decode_report_type(self, report_type):
+    def _decode_report_type(self, report_type: str) -> str:
         report_type = "zycwzb" if report_type is None else report_type
         type_dict = {"zycwzb": "主要财务指标",
                      "chnl": "偿还能力",
@@ -26,7 +26,8 @@ class StockFinancialData(BaseInfo):
                      }
         return type_dict[report_type]
 
-    def fetch_and_save_data(self, code, report_period="report", save_to_file=False, save_dir=None):
+    def fetch_and_save_data(self, code: str, report_period: str = "report", save_to_file: bool = False,
+                            save_dir: str = None) -> None:
         if save_to_file is True and save_dir is None:
             self.logger.error("当参数save_to_file为True时，参数save_dir不能为空")
             raise ValueError("save_dir can't be None when save_to_file is true")
@@ -46,7 +47,7 @@ class StockFinancialData(BaseInfo):
                 self.logger.info(f"需要额外保存数据到文件，文件名：{filename}")
                 report.to_csv(os.path.join(save_dir, filename), index=False)
 
-    def truncate_all(self, ):
+    def truncate_all(self, ) -> None:
         for report_type in self.report_type_list:
             with Session(self.engine) as db_sess:
                 report_type = "zycwzb" if report_type is None else report_type
@@ -61,19 +62,20 @@ class StockFinancialReport(BaseInfo):
         super(StockFinancialReport, self).__init__(engine)
         self.report_type_list = ["zcfzb", "lrb", "xjllb"]
 
-    def _decode_report_period(self, report_period):
+    def _decode_report_period(self, report_period: str) -> str:
         period_dict = {"report": "按报告期",
                        "year": "按年度"}
         return period_dict[report_period]
 
-    def _decode_report_type(self, report_type):
+    def _decode_report_type(self, report_type: str) -> str:
         type_dict = {"zcfzb": "资产负债表",
                      "lrb": "利润表",
                      "xjllb": "现金流量表"
                      }
         return type_dict[report_type]
 
-    def fetch_and_save_data(self, code, report_period="report", save_to_file=False, save_dir=None):
+    def fetch_and_save_data(self, code: str, report_period: str = "report", save_to_file: bool = False,
+                            save_dir: str = None) -> None:
         if save_to_file is True and save_dir is None:
             self.logger.error("当参数save_to_file为True时，参数save_dir不能为空")
             raise ValueError("save_dir can't be None when save_to_file is true")
@@ -92,7 +94,7 @@ class StockFinancialReport(BaseInfo):
                 self.logger.info(f"需要额外保存数据到文件，文件名：{filename}")
                 report.to_csv(os.path.join(save_dir, filename), index=False)
 
-    def truncate_all(self, ):
+    def truncate_all(self, ) -> None:
         for report_type in self.report_type_list:
             with Session(self.engine) as db_sess:
                 table_name = "tb_stock_financial_" + report_type

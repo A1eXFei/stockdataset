@@ -5,8 +5,9 @@ import yaml
 import mysql.connector
 import pandas as pd
 from sqlalchemy import create_engine
+from pandas import DataFrame
+from typing import Any, Tuple
 from sqlalchemy.pool import NullPool
-
 
 current_path = os.path.abspath(__file__)
 db_config_file_path = os.path.join(os.path.abspath(os.path.dirname(current_path) + os.path.sep + "../config"),
@@ -28,10 +29,10 @@ logger = logging.getLogger("appLogger")
 
 def get_engine():
     con_str = "mysql://" + config["user"] + \
-           ":" + config["password"] + \
-           "@" + config["host"] + \
-           "/" + config["database"] + \
-           "?charset=" + config["charset"]
+              ":" + config["password"] + \
+              "@" + config["host"] + \
+              "/" + config["database"] + \
+              "?charset=" + config["charset"]
     return create_engine(con_str, pool_pre_ping=True)
 
 
@@ -39,7 +40,7 @@ def get_conn():
     return mysql.connector.connect(**config)
 
 
-def get_pd_data(sql):
+def get_pd_data(sql: str) -> DataFrame:
     # 必须使用sqlalchemy创建的engine，使用mysql的连接会导致内存无法回收
     # db_conn = mysql.connector.connect(**config)
     data = pd.read_sql_query(sql=sql, con=get_engine())
@@ -47,9 +48,9 @@ def get_pd_data(sql):
     return data
 
 
-def save_pd_data(table_name, table_data, if_exists='append', index=True):
+def save_pd_data(table_name: str, table_data: DataFrame, if_exists: str = 'append', index: bool = True) -> None:
     if table_data is None:
-        return
+        raise ValueError("None for dataframe")
 
     conn = "mysql://" + config["user"] + \
            ":" + config["password"] + \
@@ -61,7 +62,7 @@ def save_pd_data(table_name, table_data, if_exists='append', index=True):
     table_data.to_sql(table_name, engine, if_exists=if_exists, index=index)
 
 
-def get_data(sql):
+def get_data(sql: str) -> list:
     cnx = mysql.connector.connect(**config)
     cursor = cnx.cursor()
     try:
@@ -74,7 +75,7 @@ def get_data(sql):
         cnx.close()
 
 
-def update(sql):
+def update(sql: str) -> None:
     cnx = mysql.connector.connect(**config)
     cursor = cnx.cursor()
     try:
@@ -106,7 +107,7 @@ def update(sql):
 #         return result
 
 
-def call(procname, args=()):
+def call(procname: Any, args: Tuple = ()) -> None:
     cnx = mysql.connector.connect(**config)
     cursor = cnx.cursor()
     try:

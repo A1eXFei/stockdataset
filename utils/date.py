@@ -1,15 +1,15 @@
 from datetime import *
 
 
-def date_to_string(date, pattern):
+def date_to_string(date: datetime, pattern: str) -> str:
     return date.strftime(pattern)
 
 
-def string_to_date(date, pattern):
+def string_to_date(date: str, pattern: str) -> datetime:
     return datetime.strptime(date, pattern)
 
 
-def get_year_and_quarter(date):
+def get_year_and_quarter(date: datetime):
     year = date.year
     month = date.month
     quarter = 1

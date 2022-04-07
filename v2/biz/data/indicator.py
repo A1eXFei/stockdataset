@@ -3,10 +3,12 @@ from v2.biz.data.alpha.base import *
 from v2.biz.data.base import BaseInfo
 from v2.biz.entity.tables import TBDailyTechData
 from sqlalchemy.orm import Session
+from pandas import DataFrame
+from typing import Dict
 
 
 class StockIndicatorData(BaseInfo):
-    def save_data_to_database(self, data):
+    def save_data_to_database(self, data: DataFrame) -> None:
         with Session(self.engine) as db_sess:
             try:
                 db_sess.add_all(data)
@@ -18,7 +20,7 @@ class StockIndicatorData(BaseInfo):
                 db_sess.rollback()
                 self.logger.error(ex)
 
-    def calc_tech_data(self, code, date, tech_calc_params):
+    def calc_tech_data(self, code: str, date: str, tech_calc_params: Dict) -> TBDailyTechData:
         try:
             param = {"code": code, "date": date, "engine": self.engine}
             dtd = TBDailyTechData()
@@ -30,7 +32,7 @@ class StockIndicatorData(BaseInfo):
             dtd.br, dtd.ar = BRAR(**param).calc(**tech_calc_params["BRAR"])
             dtd.dma, dtd.ama = DMA(**param).calc(**tech_calc_params["DMA"])
             dtd.mtm, dtd.mamtm = MTM(**param).calc(**tech_calc_params["MTM"])
-            dtd.psy6, dtd.psy12 = PSY(**param).calc(** tech_calc_params["PSY"])
+            dtd.psy6, dtd.psy12 = PSY(**param).calc(**tech_calc_params["PSY"])
             dtd.vr = VR(**param).calc(**tech_calc_params["VR"])
             dtd.kdj_k, dtd.kdj_d, dtd.kdj_j = KDJ(**param).calc(**tech_calc_params["KDJ"])
             dtd.macd_dif, dtd.macd_dea, dtd.macd = MACD(**param).calc(**tech_calc_params["MACD"])

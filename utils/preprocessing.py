@@ -3,11 +3,13 @@ import numpy
 import logging
 import numpy as np
 import pandas as pd
+from pandas import DataFrame
+from typing import Dict, Tuple
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 
 class Preprocessing:
-    def __init__(self, data_frame, config):
+    def __init__(self, data_frame: DataFrame, config: Dict):
         self._target_columns = []
         self._date_columns = []
         self._norm_columns = []
@@ -21,12 +23,12 @@ class Preprocessing:
         self._column_seeds = {}
         self.logger = logging.getLogger("appLogger")
 
-    def _parse_columns_attr(self):
+    def _parse_columns_attr(self) -> None:
         for col in self._config["columns"]:
             if col["column"]["name"] in self._df_columns_names:
                 self._target_columns.append(FeatureColumns(col))
 
-    def preprocessing(self):
+    def preprocessing(self) -> Tuple:
         if self._config["rows"]["drop_last"] == 0:
             self._df = self._df.iloc[self._config["rows"]["drop_first"]:]
         else:
@@ -83,7 +85,7 @@ class Preprocessing:
         label_columns.append(keep_columns)
         return pd.concat(label_columns, axis=1), {"columns": self._column_seeds}
 
-    def _date_feature(self, date_format="%Y-%m-%d"):
+    def _date_feature(self, date_format: str = "%Y-%m-%d") -> None:
         for col in self._date_columns:
             self._df[col.name] = pd.to_datetime(self._df[col.name], format=date_format)
             self._df[col.name + "_YEAR"] = self._df[col.name].dt.year
@@ -112,7 +114,7 @@ class Preprocessing:
                 self._std_columns.append(col.name + "_DAYOFWEEK")
                 self._std_columns.append(col.name + "_WEEKOFYEAR")
 
-    def _normalization(self):
+    def _normalization(self) -> None:
         if "LOW" in self._df.columns:
             LOW = self._df["LOW"].min()
             HIGH = self._df["HIGH"].max()
@@ -135,7 +137,7 @@ class Preprocessing:
 
             self._df[column] = (self._df[column] - low_val) / (high_val - low_val)
 
-    def _standardization(self):
+    def _standardization(self) -> None:
         for column in self._std_columns:
             seed = {"action": "standardization",
                     "min": pd.Series(self._df[column].mean()).item(),
@@ -146,7 +148,7 @@ class Preprocessing:
 
 
 class FeatureColumns:
-    def __init__(self, attr):
+    def __init__(self, attr: Dict):
         self.name = attr["column"]["name"]
         self.dtype = attr["column"]["dtype"]
         self.action = attr["column"]["action"]
@@ -159,9 +161,9 @@ class FeatureColumns:
         return "Name: %s, dtype:%s, attr:%s, action:%s" % (self.name, self.dtype, self.attr, self.action)
 
 
-def date_feature(data_frame, date_columns=None, date_format="%Y-%m-%d"):
+def date_feature(data_frame: DataFrame, date_columns: list = None, date_format: str = "%Y-%m-%d") -> DataFrame:
     if date_columns is None:
-        return
+        raise
 
     if not isinstance(date_columns, list):
         raise ValueError("date_columns必须是list类型")
@@ -183,9 +185,9 @@ def date_feature(data_frame, date_columns=None, date_format="%Y-%m-%d"):
     return df
 
 
-def normalization(data_frame, label_columns=None):
+def normalization(data_frame: DataFrame, label_columns: list = None) -> DataFrame:
     if label_columns is None:
-        return
+        raise
 
     if not isinstance(label_columns, list):
         raise ValueError("label_columns必须是list类型")
@@ -205,7 +207,7 @@ def normalization(data_frame, label_columns=None):
     return pd.concat(df_labels, axis=1)
 
 
-def sklearn_normalization(data_frame, label_columns=None):
+def sklearn_normalization(data_frame: DataFrame, label_columns: list = None) -> DataFrame:
     if label_columns is None:
         return
 
@@ -225,7 +227,7 @@ def sklearn_normalization(data_frame, label_columns=None):
     return pd.concat(df_labels, axis=1)
 
 
-def standardization(data_frame, label_columns=None):
+def standardization(data_frame: DataFrame, label_columns: list = None) -> DataFrame:
     if label_columns is None:
         return
 
@@ -246,7 +248,7 @@ def standardization(data_frame, label_columns=None):
     return pd.concat(df_labels, axis=1)
 
 
-def sklearn_standardization(data_frame, label_columns=None):
+def sklearn_standardization(data_frame: DataFrame, label_columns: list = None) -> DataFrame:
     if label_columns is None:
         return
 

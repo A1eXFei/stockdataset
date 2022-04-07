@@ -6,11 +6,13 @@ import pandas as pd
 import numpy as np
 import logging
 import traceback
+from typing import Dict
 from lxml import etree
 from utils.c import *
 from utils.app import code_to_symbol
 from tempfile import TemporaryFile
 from utils.execption import *
+from pandas import DataFrame
 
 
 # from utils import app
@@ -21,8 +23,8 @@ class Crawler163:
         # app.config_logger()
         self.logger = logging.getLogger("appLogger")
 
-    def get_163_urls(self, code):
-        def _parse_submenu(html):
+    def get_163_urls(self, code: str) -> Dict:
+        def _parse_submenu(html: str) -> Dict:
             sub_menus = {}
             sub_menu_xpath = html.xpath("//div[@class='submenu_cont clearfix']/div")
             for menu_item in sub_menu_xpath:
@@ -41,16 +43,17 @@ class Crawler163:
             self.logger.debug(menus)
             return menus
         else:
-            return None
+            raise RuntimeError("Failed to get menus")
 
-    def _get_body(self, url):
+    def _get_body(self, url: str) -> str:
         r = requests.get(url)
         if r.status_code == 200:
             return etree.HTML(r.text)
         else:
-            return None
+            raise RuntimeError("Failed to get 200 response")
 
-    def crawl_daily_market_data(self, code, start_date, end_date, retry_count=10, pause=0.001):
+    def crawl_daily_market_data(self, code: str, start_date: str, end_date: str, retry_count: int = 10,
+                                pause: float = 0.001) -> DataFrame:
         symbol = code_to_symbol(code)
         url_base = QUOTES_MONEY_163_URL
         url_par_code = "code=" + symbol + "&"
@@ -108,7 +111,7 @@ class Crawler163:
                 return df
         return None
 
-    def crawl_company_info(self, code):
+    def crawl_company_info(self, code: str) -> Dict:
         try:
             company_info = {}
             urls = self.get_163_urls(code)
@@ -140,7 +143,7 @@ class Crawler163:
             self.logger.debug(f"{key}\t {str(company_info[key])}")
         return company_info
 
-    def crawl_main_financial_data(self, code, report_period="report", report_type=None):
+    def crawl_main_financial_data(self, code: str, report_period: str = "report", report_type: str = None) -> DataFrame:
         """
         :param code: 股票代码
         :param report_period:
@@ -188,7 +191,7 @@ class Crawler163:
         else:
             return None
 
-    def crawl_financial_report(self, code, report_period="report", report_type="zcfzb"):
+    def crawl_financial_report(self, code: str, report_period: str = "report", report_type: str = "zcfzb") -> DataFrame:
         """
         :param code: 股票代码
         :param report_period:
@@ -236,7 +239,7 @@ class Crawler163:
         else:
             return None
 
-    def _rename_cols(self, df, report_type):
+    def _rename_cols(self, df: DataFrame, report_type: str) -> DataFrame:
         def _replace_name(names, mapping):
             new_name = []
             for name in names:
@@ -270,7 +273,7 @@ class CrawlerSina:
         # app.config_logger()
         self.logger = logging.getLogger("appLogger")
 
-    def get_money_flow(self, code, asc=1, num=50):
+    def get_money_flow(self, code: str, asc: int = 1, num: int = 50) -> DataFrame:
         """
         :param code: 股票的代码
         :param asc: 参数：1代表升序，0代表降序

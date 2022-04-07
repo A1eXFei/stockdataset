@@ -6,17 +6,19 @@ import pandas as pd
 import traceback
 import utils.database as dbu
 from warnings import simplefilter
+from pandas import DataFrame
+from typing import Tuple, Any
 
 
 class BaseAlpha:
-    def __init__(self, code, date, engine):
+    def __init__(self, code: str, date: str, engine):
         simplefilter(action='ignore', category=FutureWarning)
         self.engine = engine
         self.code = code
         self.date = date
         self.logger = logging.getLogger("appLogger")
 
-    def get_basic_data(self, n_days):
+    def get_basic_data(self, n_days: int) -> DataFrame:
         sql = f"SELECT * FROM tb_stock_basic_daily WHERE 1=1" \
               f" AND code = '{self.code}'" + \
               f" AND date <= '{self.date}'" + \
@@ -24,12 +26,12 @@ class BaseAlpha:
         df = pd.read_sql(sql=sql, con=self.engine.connect()).sort_index(ascending=False)
         return df
 
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> Any:
         raise NotImplementedError()
 
 
 class MA(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> Tuple:
         ma_1 = 0.0
         ma_2 = 0.0
         ma_3 = 0.0
@@ -68,7 +70,7 @@ class MA(BaseAlpha):
 
 
 class BBI(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> float:
         bbi = 0.0
 
         try:
@@ -106,7 +108,7 @@ class BBI(BaseAlpha):
 
 
 class BIAS(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> Tuple:
         bias1 = 0.0
         bias2 = 0.0
         bias3 = 0.0
@@ -150,7 +152,7 @@ class BIAS(BaseAlpha):
 
 
 class BRAR(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> Tuple:
         ar = 0.0
         br = 0.0
 
@@ -185,7 +187,7 @@ class BRAR(BaseAlpha):
 
 
 class DMA(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> Tuple:
         dma = 0.0
         ama = 0.0
 
@@ -221,7 +223,7 @@ class DMA(BaseAlpha):
 
 
 class MTM(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> Tuple:
         mtm = 0.0
         mamtm = 0.0
 
@@ -255,7 +257,7 @@ class MTM(BaseAlpha):
 
 
 class PSY(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> Tuple:
         psy1 = 0.0
         psy2 = 0.0
 
@@ -295,7 +297,7 @@ class PSY(BaseAlpha):
 
 
 class VR(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> float:
         vr = 0.0
 
         try:
@@ -333,7 +335,7 @@ class VR(BaseAlpha):
 
 
 class KDJ(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> Tuple:
         kdj_k = 0.0
         kdj_d = 0.0
         kdj_j = 0.0
@@ -380,7 +382,7 @@ class KDJ(BaseAlpha):
 
 
 class MACD(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> Tuple:
         dif = 0.0
         dea = 0.0
         macd = 0.0
@@ -418,7 +420,7 @@ class MACD(BaseAlpha):
 
 
 class BOLL(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> Tuple:
         upper_brand = 0.0
         middle_brand = 0.0
         lower_brand = 0.0
@@ -455,7 +457,7 @@ class BOLL(BaseAlpha):
 
 
 class CCI(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> float:
         cci = 0.0
 
         try:
@@ -482,7 +484,7 @@ class CCI(BaseAlpha):
 
 
 class ROC(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> Tuple:
         roc = 0.0
         maroc = 0.0
 
@@ -516,7 +518,7 @@ class ROC(BaseAlpha):
 
 
 class RSI(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> Tuple:
         rsi1 = 0.0
         rsi2 = 0.0
         rsi3 = 0.0
@@ -552,7 +554,7 @@ class RSI(BaseAlpha):
 
 
 class WR(BaseAlpha):
-    def calc(self, **kwargs):
+    def calc(self, **kwargs) -> Tuple:
         wr1 = 0.0
         wr2 = 0.0
 

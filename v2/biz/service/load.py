@@ -15,11 +15,12 @@ from v2.biz.data.market import StockMarketData
 from v2.biz.data.indicator import StockIndicatorData
 from v2.biz.data.financial import StockFinancialData, StockFinancialReport
 from v2.biz.data.cashflow import StockCashFlowData
+from typing import Dict
 
 g_logger = logging.getLogger("appLogger")
 
 
-def create_daily_process(tech_config, code, start_date, end_date):
+def create_daily_process(tech_config: dict, code: str, start_date: str, end_date: str) -> None:
     engine = dbu.get_engine()
     p_logger = logging.getLogger("appLogger")
     if not bool(p_logger.handlers):
@@ -70,7 +71,7 @@ def create_daily_process(tech_config, code, start_date, end_date):
     p_logger.info("股票代码" + code + "的技术指标信息已保存...")
 
 
-def load_daily_data(task_config):
+def load_daily_data(task_config: Dict) -> None:
     tech_param_file = open(task_config["tech_config"], "r", encoding="utf-8")
     tech_config = yaml.load(tech_param_file.read())
 
@@ -95,7 +96,7 @@ def load_daily_data(task_config):
     rpt.load_report()
 
 
-def create_weekly_process(code):
+def create_weekly_process(code: str) -> None:
     app.config_logger()
 
     engine = dbu.get_engine()
@@ -103,7 +104,7 @@ def create_weekly_process(code):
     si.update(code)
 
 
-def load_weekly_data(task_config):
+def load_weekly_data(task_config: Dict) -> None:
     sse_file_path = task_config["sse_file_path"]
     szse_file_path = task_config["szse_file_path"]
 
@@ -122,7 +123,7 @@ def load_weekly_data(task_config):
     g_logger.info("公司其他信息更新完成")
 
 
-def create_quarterly_process(code, save_to_file, save_dir):
+def create_quarterly_process(code: str, save_to_file: bool, save_dir: str) -> None:
     p_logger = logging.getLogger("appLogger")
     if not bool(p_logger.handlers):
         app.config_logger()
@@ -140,7 +141,7 @@ def create_quarterly_process(code, save_to_file, save_dir):
     p_logger.info(f"{code}的财务数据已保存")
 
 
-def load_quarterly_data(task_config):
+def load_quarterly_data(task_config: Dict) -> None:
     g_logger.info("删除所有现有主要财务数据...")
     sfd = StockFinancialData(dbu.get_engine())
     sfd.truncate_all()
@@ -159,7 +160,7 @@ def load_quarterly_data(task_config):
     g_logger.info("主要财务数据更新完成")
 
 
-def create_yearly_process(code, save_to_file, save_dir):
+def create_yearly_process(code: str, save_to_file: bool, save_dir: str) -> None:
     p_logger = logging.getLogger("appLogger")
     if not bool(p_logger.handlers):
         app.config_logger()
@@ -177,7 +178,7 @@ def create_yearly_process(code, save_to_file, save_dir):
     p_logger.info(f"{code}的财务报表已保存")
 
 
-def load_yearly_data(task_config):
+def load_yearly_data(task_config: Dict) -> None:
     g_logger.info("删除所有现有财务报表数据...")
     sfd = StockFinancialReport(dbu.get_engine())
     sfd.truncate_all()
@@ -196,7 +197,7 @@ def load_yearly_data(task_config):
     g_logger.info("财务报表数据更新完成")
 
 
-def init_data(task_config):
+def init_data(task_config: Dict) -> None:
     load_weekly_data(task_config["weekly"])
     load_daily_data(task_config["daily"])
     load_quarterly_data(task_config["quarterly"])
