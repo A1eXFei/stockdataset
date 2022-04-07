@@ -1,3 +1,5 @@
+import random
+
 DEFAULT_LAST_UPDATE_DATE = '1991-01-01'
 
 MONEY_163_URL = "http://quotes.money.163.com"
@@ -384,3 +386,21 @@ XJLLB_COL_MAPPING = {"CODE": "CODE",
                      "现金等价物的期初余额(万元)": "XJJDJWDQCYE_WY",
                      "现金及现金等价物的净增加额(万元)": "XJJXJDJWDJZJE_WY"
                      }
+
+SSE_URL = "http://query.sse.com.cn//sseQuery/commonExcelDd.do"
+SSE_PARAMS = {"sqlId": "COMMON_SSE_CP_GPJCTPZ_GPLB_GP_L",
+              "type": "inParams",
+              "CSRC_CODE": "",
+              "STOCK_CODE": "",
+              "REG_PROVINCE": "",
+              "STOCK_TYPE": 1,
+              "COMPANY_STATUS": "2, 4, 5, 7, 8"}
+SSE_HEADERS = {"Accept-Encoding": "gzip, deflate",
+               "Host": "query.sse.com.cn",
+               "Referer": "http://www.sse.com.cn/"}
+
+SZSE_URL = "http://www.szse.cn/api/report/ShowReport"
+SZSE_PARAMS = {"SHOWTYPE": "xlsx",
+               "CATALOGID": "1110",
+               "TABKEY": "tab1",
+               "random": random.random()}

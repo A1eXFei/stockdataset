@@ -101,15 +101,16 @@ def create_weekly_process(code: str) -> None:
 
     engine = dbu.get_engine()
     si = StockInfo(engine)
-    si.update(code)
+    si.update_info(code)
 
 
 def load_weekly_data(task_config: Dict) -> None:
-    sse_file_path = task_config["sse_file_path"]
-    szse_file_path = task_config["szse_file_path"]
+    # sse_file_path = task_config["sse_file_path"]
+    # szse_file_path = task_config["szse_file_path"]
 
     si = StockInfo(dbu.get_engine())
-    si.add(sse_file_path, szse_file_path)
+    # si.add(sse_file_path, szse_file_path)
+    si.update_list()
     g_logger.info("添加股票代码完成，开始更新股票其他公司信息")
 
     stocks = si.get_stock_codes()

@@ -17,12 +17,12 @@ from pandas import DataFrame
 
 # from utils import app
 
-
-class Crawler163:
+class BaseCrawler:
     def __init__(self):
         # app.config_logger()
         self.logger = logging.getLogger("appLogger")
 
+class Crawler163(BaseCrawler):
     def get_163_urls(self, code: str) -> Dict:
         def _parse_submenu(html: str) -> Dict:
             sub_menus = {}
@@ -268,11 +268,7 @@ class Crawler163:
         return df
 
 
-class CrawlerSina:
-    def __init__(self):
-        # app.config_logger()
-        self.logger = logging.getLogger("appLogger")
-
+class CrawlerSina(BaseCrawler):
     def get_money_flow(self, code: str, asc: int = 1, num: int = 50) -> DataFrame:
         """
         :param code: 股票的代码
@@ -329,3 +325,37 @@ class CrawlerSina:
         else:
             self.logger.error("无法从sina获得数据！！！")
             raise RuntimeError("Failed to get response from sina")
+
+
+class CrawlerSSE(BaseCrawler):
+    def get_list(self) -> DataFrame:
+        self.logger.info("开始从上交所获取股票列表...")
+        r = requests.get(SSE_URL, params=SSE_PARAMS, headers=SSE_HEADERS)
+        if r.status_code == 200:
+            temp = TemporaryFile()
+            temp.write(r.content)
+            temp.seek(0)
+            df = pd.read_excel(temp)
+            temp.close()
+            self.logger.info(f"获得上交所股票共计{df.shape[0]}个")
+            return df
+        else:
+            self.logger.error("从上交所获取股票列表失败")
+            raise RuntimeError("Failed to get data from SSE")
+
+
+class CrawlerSZSE(BaseCrawler):
+    def get_list(self) -> DataFrame:
+        self.logger.info("开始从深交所获取股票列表...")
+        r = requests.get(SZSE_URL, params=SZSE_PARAMS)
+        if r.status_code == 200:
+            temp = TemporaryFile()
+            temp.write(r.content)
+            temp.seek(0)
+            df = pd.read_excel(temp)
+            temp.close()
+            self.logger.info(f"获得深交所股票共计{df.shape[0]}个")
+            return df
+        else:
+            self.logger.error("从深交所获取股票列表失败")
+            raise RuntimeError("Failed to get data from SZSE")
