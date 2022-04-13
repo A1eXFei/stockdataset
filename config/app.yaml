@@ -15,12 +15,10 @@ app:
     split_year: False
     keep_header: True
   daily:
-    num_process: 5
+    num_process: 10
     tech_config: ./config/tech_indicator_params.yaml
   weekly:
     num_process: 5
-    sse_file_path: ./files/sse.xls
-    szse_file_path: ./files/szse.xlsx
   quarterly:
     num_process: 5
     save_to_file: True

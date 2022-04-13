@@ -63,11 +63,12 @@ def create_daily_process(tech_config: dict, code: str, start_date: str, end_date
     p_logger.info(f"开始计算股票代码{code}的技术指标...")
     sid = StockIndicatorData(engine)
 
-    tech_data_list = []
-    for each_date in df.index.sort_values().values:
-        tech_data_list.append(sid.calc_tech_data(code, each_date, tech_config))
-
-    sid.save_data_to_database(tech_data_list)
+    # tech_data_list = []
+    # for each_date in df.index.sort_values().values:
+    #     tech_data_list.append(sid.calc_tech_data(code, each_date, tech_config))
+    #
+    # sid.save_data_to_database(tech_data_list)
+    sid.calc_tech_data_and_save_to_database(code, start_date, end_date, tech_config)
     p_logger.info("股票代码" + code + "的技术指标信息已保存...")
 
 
@@ -97,7 +98,9 @@ def load_daily_data(task_config: Dict) -> None:
 
 
 def create_weekly_process(code: str) -> None:
-    app.config_logger()
+    p_logger = logging.getLogger("appLogger")
+    if not bool(p_logger.handlers):
+        app.config_logger()
 
     engine = dbu.get_engine()
     si = StockInfo(engine)

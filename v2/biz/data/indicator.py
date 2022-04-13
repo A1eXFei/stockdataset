@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from v2.biz.data.alpha.base import *
+from v2.biz.data.alpha.common import CommonAlpha
 from v2.biz.data.base import BaseInfo
 from v2.biz.entity.tables import TBDailyTechData
 from sqlalchemy.orm import Session
@@ -8,6 +9,7 @@ from typing import Dict
 
 
 class StockIndicatorData(BaseInfo):
+    @DeprecationWarning
     def save_data_to_database(self, data: DataFrame) -> None:
         with Session(self.engine) as db_sess:
             try:
@@ -20,6 +22,7 @@ class StockIndicatorData(BaseInfo):
                 db_sess.rollback()
                 self.logger.error(ex)
 
+    @DeprecationWarning
     def calc_tech_data(self, code: str, date: str, tech_calc_params: Dict) -> TBDailyTechData:
         try:
             param = {"code": code, "date": date, "engine": self.engine}
@@ -47,3 +50,28 @@ class StockIndicatorData(BaseInfo):
             self.logger.error(ex)
             self.logger.error(traceback.format_exc())
             return None
+
+    def calc_tech_data_and_save_to_database(self, code: str, start_date: str, end_date: str,
+                                            tech_calc_params: Dict) -> None:
+        try:
+            ca = CommonAlpha(code, start_date, end_date, self.engine)
+            ca.calc_ma(**tech_calc_params["MA"])
+            ca.calc_bbi(**tech_calc_params["BBI"])
+            ca.calc_bias(**tech_calc_params["BIAS"])
+            ca.calc_brar(**tech_calc_params["BRAR"])
+            ca.calc_dma(**tech_calc_params["DMA"])
+            ca.calc_mtm(**tech_calc_params["MTM"])
+            ca.calc_psy(**tech_calc_params["PSY"])
+            ca.calc_vr(**tech_calc_params["VR"])
+            ca.calc_kdj(**tech_calc_params["KDJ"])
+            ca.calc_macd(**tech_calc_params["MACD"])
+            ca.calc_boll(**tech_calc_params["BOLL"])
+            ca.calc_cci(**tech_calc_params["CCI"])
+            ca.calc_roc(**tech_calc_params["ROC"])
+            ca.calc_rsi(**tech_calc_params["RSI"])
+            ca.calc_wr(**tech_calc_params["WR"])
+
+            ca.save_data_to_database()
+        except Exception as ex:
+            self.logger.error(ex)
+            self.logger.error(traceback.format_exc())

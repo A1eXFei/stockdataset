@@ -22,6 +22,7 @@ class BaseCrawler:
         # app.config_logger()
         self.logger = logging.getLogger("appLogger")
 
+
 class Crawler163(BaseCrawler):
     def get_163_urls(self, code: str) -> Dict:
         def _parse_submenu(html: str) -> Dict:

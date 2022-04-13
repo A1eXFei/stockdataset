@@ -10,6 +10,7 @@ from pandas import DataFrame
 from typing import Tuple, Any
 
 
+@DeprecationWarning
 class BaseAlpha:
     def __init__(self, code: str, date: str, engine):
         simplefilter(action='ignore', category=FutureWarning)
@@ -30,6 +31,7 @@ class BaseAlpha:
         raise NotImplementedError()
 
 
+@DeprecationWarning
 class MA(BaseAlpha):
     def calc(self, **kwargs) -> Tuple:
         ma_1 = 0.0
@@ -69,6 +71,7 @@ class MA(BaseAlpha):
             return ma_1, ma_2, ma_3
 
 
+@DeprecationWarning
 class BBI(BaseAlpha):
     def calc(self, **kwargs) -> float:
         bbi = 0.0
@@ -107,6 +110,7 @@ class BBI(BaseAlpha):
             return bbi
 
 
+@DeprecationWarning
 class BIAS(BaseAlpha):
     def calc(self, **kwargs) -> Tuple:
         bias1 = 0.0
@@ -151,6 +155,7 @@ class BIAS(BaseAlpha):
             return bias1, bias2, bias3
 
 
+@DeprecationWarning
 class BRAR(BaseAlpha):
     def calc(self, **kwargs) -> Tuple:
         ar = 0.0
@@ -186,6 +191,7 @@ class BRAR(BaseAlpha):
             return br, ar
 
 
+@DeprecationWarning
 class DMA(BaseAlpha):
     def calc(self, **kwargs) -> Tuple:
         dma = 0.0
@@ -222,6 +228,7 @@ class DMA(BaseAlpha):
             return dma, ama
 
 
+@DeprecationWarning
 class MTM(BaseAlpha):
     def calc(self, **kwargs) -> Tuple:
         mtm = 0.0
@@ -256,6 +263,7 @@ class MTM(BaseAlpha):
             return mtm, mamtm
 
 
+@DeprecationWarning
 class PSY(BaseAlpha):
     def calc(self, **kwargs) -> Tuple:
         psy1 = 0.0
@@ -296,6 +304,7 @@ class PSY(BaseAlpha):
             return psy1, psy2
 
 
+@DeprecationWarning
 class VR(BaseAlpha):
     def calc(self, **kwargs) -> float:
         vr = 0.0
@@ -334,6 +343,7 @@ class VR(BaseAlpha):
             return vr
 
 
+@DeprecationWarning
 class KDJ(BaseAlpha):
     def calc(self, **kwargs) -> Tuple:
         kdj_k = 0.0
@@ -381,6 +391,7 @@ class KDJ(BaseAlpha):
             return kdj_k, kdj_d, kdj_j
 
 
+@DeprecationWarning
 class MACD(BaseAlpha):
     def calc(self, **kwargs) -> Tuple:
         dif = 0.0
@@ -419,6 +430,7 @@ class MACD(BaseAlpha):
             return dif, dea, macd
 
 
+@DeprecationWarning
 class BOLL(BaseAlpha):
     def calc(self, **kwargs) -> Tuple:
         upper_brand = 0.0
@@ -456,6 +468,7 @@ class BOLL(BaseAlpha):
             return upper_brand, middle_brand, lower_brand
 
 
+@DeprecationWarning
 class CCI(BaseAlpha):
     def calc(self, **kwargs) -> float:
         cci = 0.0
@@ -483,6 +496,7 @@ class CCI(BaseAlpha):
             return cci
 
 
+@DeprecationWarning
 class ROC(BaseAlpha):
     def calc(self, **kwargs) -> Tuple:
         roc = 0.0
@@ -517,6 +531,7 @@ class ROC(BaseAlpha):
             return roc, maroc
 
 
+@DeprecationWarning
 class RSI(BaseAlpha):
     def calc(self, **kwargs) -> Tuple:
         rsi1 = 0.0
@@ -553,6 +568,7 @@ class RSI(BaseAlpha):
             return rsi1, rsi2, rsi3
 
 
+@DeprecationWarning
 class WR(BaseAlpha):
     def calc(self, **kwargs) -> Tuple:
         wr1 = 0.0

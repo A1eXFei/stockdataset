@@ -16,7 +16,12 @@ import utils.database as dbu
 # print(df1.loc[~(df1 == 0).all(axis=1), :])  # 删了它
 # # print(df1)
 
-from v2.biz.data.info import StockInfo
-s = StockInfo(dbu.get_engine())
-s.truncate_list()
-s.update_list()
+# from v2.biz.data.info import StockInfo
+# s = StockInfo(dbu.get_engine())
+# s.truncate_list()
+# s.update_list()
+
+import pandas as pd
+
+df = pd.DataFrame({'B': [0, 1, 7, 55, 32]})
+print(df.rolling(3).sum())
